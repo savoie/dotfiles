@@ -11,7 +11,7 @@
 (setq slime-contribs '(slime-fancy))
 
 ;; Enable themes
-(add-to-list 'custom-theme-load-path "~/.emacs.d/themes/") 
+(add-to-list 'custom-theme-load-path "~/.emacs.d/themes/")
 (load-theme 'monokai t)
 
 ;; Enable Evil mode
@@ -25,6 +25,16 @@
 (define-key minibuffer-local-completion-map [escape] 'minibuffer-keyboard-quit)
 (define-key minibuffer-local-must-match-map [escape] 'minibuffer-keyboard-quit)
 (define-key minibuffer-local-isearch-map [escape] 'minibuffer-keyboard-quit)
+
+;; Org mode
+(require 'org)
+(define-key global-map "\C-cl" 'org-store-link)
+(define-key global-map "\C-ca" 'org-agenda)
+(setq org-log-done t)
+(setq org-agenda-files '("~/org"))
+(setq org-agenda-window-setup 'current-window)
+(setq org-default-notes-file (concat org-directory "/notes.org"))
+(define-key global-map "\C-cc" 'org-capture)
 
 ;; Navigation
 ;;; Keysmash escape
@@ -64,3 +74,7 @@
 ;;; j/k on visual lines
 (define-key evil-normal-state-map (kbd "j") 'evil-next-visual-line)
 (define-key evil-normal-state-map (kbd "k") 'evil-previous-visual-line)
+
+;;; Misc
+;; Whitespace cleanup
+(add-hook 'before-save-hook 'whitespace-cleanup)
