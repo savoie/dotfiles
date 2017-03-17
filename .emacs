@@ -3,16 +3,23 @@
 	     '("melpa-stable" . "https://stable.melpa.org/packages/") t)
 (package-initialize)
 (custom-set-variables
- '(package-selected-packages (quote (slime ## evil))))
+ '(custom-safe-themes
+   (quote
+    ("c74e83f8aa4c78a121b52146eadb792c9facc5b1f02c917e3dbb454fca931223" default)))
+ '(package-selected-packages (quote (smart-mode-line slime ## evil))))
 (custom-set-faces)
 
 ;; Enable SBCL and slime
 (setq inferior-lisp-program "/usr/local/opt/sbcl/bin/sbcl")
 (setq slime-contribs '(slime-fancy))
 
-;; Enable themes
+;; Prettify
+;;; Theme
 (add-to-list 'custom-theme-load-path "~/.emacs.d/themes/")
 (load-theme 'monokai t)
+;;; Modeline
+(setq sml/theme 'respectful)
+(sml/setup)
 
 ;; Enable Evil mode
 (require 'evil)
