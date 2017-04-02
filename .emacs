@@ -75,3 +75,4 @@
 ;; Misc
 (add-hook 'before-save-hook 'whitespace-cleanup)
 (setq vc-follow-symlinks t)
+(add-to-list 'default-frame-alist '(fullscreen . maximized))
