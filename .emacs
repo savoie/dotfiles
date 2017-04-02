@@ -22,6 +22,11 @@
 (use-package monokai-theme
   :ensure t)
 
+(use-package linum-relative
+  :ensure t
+  :config (setq linum-relative-current-symbol "")
+  :init (linum-relative-on))
+
 (use-package slime
   :ensure t
   :config (progn
@@ -93,6 +98,3 @@
 
 ;; Whitespace cleanup
 (add-hook 'before-save-hook 'whitespace-cleanup)
-
-;; Line numbering
-(global-linum-mode t)
