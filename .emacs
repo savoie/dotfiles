@@ -24,15 +24,17 @@
 
 (use-package linum-relative
   :ensure t
-  :config (setq linum-relative-current-symbol "")
-  :init (linum-relative-on))
+  :init (setq linum-relative-current-symbol "")
+  :config (progn
+	    (global-linum-mode nil)
+	    (linum-relative-on)))
 
 (use-package slime
   :ensure t
   :config (progn
 	    (setq inferior-lisp-program "/usr/local/opt/sbcl/bin/sbcl")
 	    (setq slime-contribs '(slime-fancy)))
-  :defer t)
+  )
 
 (use-package org
   :ensure t
@@ -96,5 +98,6 @@
 							  (list evt)))))))))
   :init (evil-mode 1))
 
-;; Whitespace cleanup
+;; Misc
 (add-hook 'before-save-hook 'whitespace-cleanup)
+(setq vc-follow-symlinks t)
