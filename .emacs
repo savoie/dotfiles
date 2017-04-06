@@ -1,43 +1,43 @@
-(require 'package)
-(setq package-enable-at-startup nil)
-(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
-(add-to-list 'package-archives '("marmalade" . "https://marmalade-repo.org/packages/"))
-(add-to-list 'package-archives '("gnu" . "https://elpa.gnu.org/packages/"))
 (package-initialize)
-
-(unless (package-installed-p 'use-package)
-  (package-refresh-contents)
-  (package-install 'use-package))
-
-(eval-when-compile
-  (require 'use-package))
-(require 'diminish)
-(require 'bind-key)
 
 (setq custom-file "~/.emacs.d/etc/custom.el")
 (when (not (file-exists-p custom-file))
   (with-temp-buffer (write-file custom-file)))
 (load custom-file :noerror)
 
+(unless (require 'quelpa nil t)
+  (with-temp-buffer
+    (url-insert-file-contents "https://raw.github.com/quelpa/quelpa/master/bootstrap.el")
+    (eval-buffer)))
+
+(setq quelpa-stable-p t)
+
+(quelpa
+ '(quelpa-use-package
+   :fetcher github
+   :repo "quelpa/quelpa-use-package"
+   :stable nil))
+(require 'quelpa-use-package)
+
 (use-package monokai-theme
-  :ensure t)
+  :quelpa t)
 
 (use-package linum-relative
-  :ensure t
+  :quelpa t
   :init (setq linum-relative-current-symbol "")
   :config (progn
 	    (global-linum-mode nil)
 	    (linum-relative-on)))
 
 (use-package slime
-  :ensure t
+  :quelpa t
   :config (progn
 	    (setq inferior-lisp-program "/usr/local/opt/sbcl/bin/sbcl")
 	    (setq slime-contribs '(slime-fancy)))
   )
 
 (use-package org
-  :ensure t
+  :quelpa t
   :config (progn
 	    (define-key global-map "\C-cl" 'org-store-link)
 	    (define-key global-map "\C-ca" 'org-agenda)
@@ -48,7 +48,7 @@
 	    (define-key global-map "\C-cc" 'org-capture)))
 
 (use-package evil
-  :ensure t
+  :quelpa (:stable nil)
   :config (progn
 	    ;; Esc anything
 	    (define-key evil-normal-state-map [escape] 'keyboard-quit)
@@ -65,23 +65,30 @@
 
 	    ;; Keysmash escape
 	    (use-package key-chord
-	      :ensure t
+	      :quelpa t
 	      :config (progn
 			(key-chord-define evil-insert-state-map "jk" 'evil-normal-state)
 			(key-chord-define evil-insert-state-map "kj" 'evil-normal-state))
 	      :init (key-chord-mode 1))
 
 	    (use-package evil-surround
-	      :ensure t
+	      :quelpa t
 	      :init (global-evil-surround-mode 1))
 
 	    ;; Don't print state to echo area
 	    (setq evil-insert-state-message nil)
 	    (setq evil-visual-state-message nil)
 	    (setq evil-visual-line-message nil))
-  :init (evil-mode 1))
+  :init (progn
+	  (use-package evil-leader
+	    :quelpa t
+	    :config (evil-leader/set-leader "<SPC>")
+	    :init (global-evil-leader-mode))
+
+	  (evil-mode 1)))
 
 ;; Misc
 (add-hook 'before-save-hook 'whitespace-cleanup)
 (setq vc-follow-symlinks t)
+(setq inhibit-startup-screen t)
 (add-to-list 'default-frame-alist '(fullscreen . maximized))
