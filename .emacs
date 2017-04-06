@@ -69,7 +69,16 @@
 	      :config (progn
 			(key-chord-define evil-insert-state-map "jk" 'evil-normal-state)
 			(key-chord-define evil-insert-state-map "kj" 'evil-normal-state))
-	      :init (key-chord-mode 1)))
+	      :init (key-chord-mode 1))
+
+	    (use-package evil-surround
+	      :ensure t
+	      :init (global-evil-surround-mode 1))
+
+	    ;; Don't print state to echo area
+	    (setq evil-insert-state-message nil)
+	    (setq evil-visual-state-message nil)
+	    (setq evil-visual-line-message nil))
   :init (evil-mode 1))
 
 ;; Misc
