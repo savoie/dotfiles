@@ -1,3 +1,9 @@
+(require 'package)
+(setq package-enable-at-startup nil)
+(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
+(add-to-list 'package-archives '("melpa-stable" . "https://stable.melpa.org/packages/"))
+(add-to-list 'package-archives '("marmalade" . "https://marmalade-repo.org/packages/"))
+(add-to-list 'package-archives '("gnu" . "https://elpa.gnu.org/packages/"))
 (package-initialize)
 
 (setq custom-file "~/.emacs.d/etc/custom.el")
@@ -10,8 +16,6 @@
     (url-insert-file-contents "https://raw.github.com/quelpa/quelpa/master/bootstrap.el")
     (eval-buffer)))
 
-(setq quelpa-stable-p t)
-
 (quelpa
  '(quelpa-use-package
    :fetcher github
@@ -20,24 +24,27 @@
 (require 'quelpa-use-package)
 
 (use-package monokai-theme
-  :quelpa t)
+  :ensure t
+  :pin melpa-stable)
 
 (use-package linum-relative
-  :quelpa t
+  :ensure t
+  :pin melpa-stable
   :init (setq linum-relative-current-symbol "")
   :config (progn
 	    (global-linum-mode nil)
 	    (linum-relative-on)))
 
 (use-package slime
-  :quelpa t
+  :ensure t
   :config (progn
 	    (setq inferior-lisp-program "/usr/local/opt/sbcl/bin/sbcl")
 	    (setq slime-contribs '(slime-fancy)))
   )
 
 (use-package org
-  :quelpa t
+  :ensure t
+  :pin melpa-stable
   :config (progn
 	    (define-key global-map "\C-cl" 'org-store-link)
 	    (define-key global-map "\C-ca" 'org-agenda)
@@ -48,7 +55,7 @@
 	    (define-key global-map "\C-cc" 'org-capture)))
 
 (use-package evil
-  :quelpa (:stable nil)
+  :ensure t
   :config (progn
 	    ;; Esc anything
 	    (define-key evil-normal-state-map [escape] 'keyboard-quit)
@@ -65,14 +72,16 @@
 
 	    ;; Keysmash escape
 	    (use-package key-chord
-	      :quelpa t
+	      :ensure t
+	      :pin melpa-stable
 	      :config (progn
 			(key-chord-define evil-insert-state-map "jk" 'evil-normal-state)
-			(key-chord-define evil-insert-state-map "kj" 'evil-normal-state))
-	      :init (key-chord-mode 1))
+			(key-chord-define evil-insert-state-map "kj" 'evil-normal-state)
+			(key-chord-mode 1)))
 
 	    (use-package evil-surround
-	      :quelpa t
+	      :ensure t
+	      :pin melpa-stable
 	      :config (global-evil-surround-mode 1))
 
 	    (use-package evil-org
@@ -89,7 +98,8 @@
 	    (setq evil-visual-line-message nil))
   :init (progn
 	  (use-package evil-leader
-	    :quelpa t
+	    :ensure t
+	    :pin melpa-stable
 	    :config (evil-leader/set-leader "<SPC>")
 	    :init (global-evil-leader-mode))
 
