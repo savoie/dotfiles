@@ -73,7 +73,15 @@
 
 	    (use-package evil-surround
 	      :quelpa t
-	      :init (global-evil-surround-mode 1))
+	      :config (global-evil-surround-mode 1))
+
+	    (use-package evil-org
+	      :quelpa (evil-org
+		       :fetcher github
+		       :repo "somelauw/evil-org-improved"
+		       :stable nil)
+	      :config (evil-org-set-key-theme
+		       '(textobjects insert additional shift leader)))
 
 	    ;; Don't print state to echo area
 	    (setq evil-insert-state-message nil)
