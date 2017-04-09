@@ -39,20 +39,13 @@
   :ensure t
   :config (progn
 	    (setq inferior-lisp-program "/usr/local/opt/sbcl/bin/sbcl")
-	    (setq slime-contribs '(slime-fancy)))
-  )
+	    (setq slime-contribs '(slime-fancy))))
 
-(use-package org
-  :ensure t
-  :pin melpa-stable
-  :config (progn
-	    (define-key global-map "\C-cl" 'org-store-link)
-	    (define-key global-map "\C-ca" 'org-agenda)
-	    (setq org-log-done t)
-	    (setq org-agenda-files '("~/org"))
-	    (setq org-agenda-window-setup 'current-window)
-	    (setq org-default-notes-file (concat org-directory "/notes.org"))
-	    (define-key global-map "\C-cc" 'org-capture)))
+(require 'org)
+(setq org-log-done t)
+(setq org-agenda-files '("~/org"))
+(setq org-agenda-window-setup 'current-window)
+(setq org-default-notes-file (concat org-directory "/notes.org"))
 
 (use-package evil
   :ensure t
@@ -90,18 +83,23 @@
 		       :repo "somelauw/evil-org-improved"
 		       :stable nil)
 	      :config (evil-org-set-key-theme
-		       '(textobjects insert additional shift leader)))
+		       '(textobjects insert shift leader)))
 
 	    ;; Don't print state to echo area
 	    (setq evil-insert-state-message nil)
 	    (setq evil-visual-state-message nil)
 	    (setq evil-visual-line-message nil))
+
   :init (progn
 	  (use-package evil-leader
 	    :ensure t
 	    :pin melpa-stable
-	    :config (evil-leader/set-leader "<SPC>")
-	    :init (global-evil-leader-mode))
+	    :config (progn
+		      (evil-leader/set-leader "<SPC>")
+		      (evil-leader/set-key
+			"a" 'org-agenda
+			"c" 'org-capture)
+		      (global-evil-leader-mode)))
 
 	  (evil-mode 1)))
 
