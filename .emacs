@@ -42,10 +42,17 @@
 	    (setq slime-contribs '(slime-fancy))))
 
 (require 'org)
+(require 'ox-beamer)
 (setq org-log-done t)
 (setq org-agenda-files '("~/org"))
 (setq org-agenda-window-setup 'current-window)
 (setq org-default-notes-file (concat org-directory "/notes.org"))
+
+(setq org-agenda-default-appointment-duration 15)
+(setq org-icalendar-combined-agenda-file "~/org/agenda.ics")
+(setq org-icalendar-include-todo '(all))
+(setq org-icalendar-use-scheduled '(event-if-todo event-if-not-todo))
+(setq org-icalendar-use-deadline '(event-if-todo event-if-not-todo))
 
 (use-package evil
   :ensure t
@@ -83,7 +90,7 @@
 		       :repo "somelauw/evil-org-improved"
 		       :stable nil)
 	      :config (evil-org-set-key-theme
-		       '(textobjects insert shift leader)))
+		       '(textobjects insert leader)))
 
 	    ;; Don't print state to echo area
 	    (setq evil-insert-state-message nil)
