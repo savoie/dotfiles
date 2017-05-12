@@ -35,11 +35,73 @@
 	    (global-linum-mode nil)
 	    (linum-relative-on)))
 
+(use-package company
+  :ensure t
+  :config (use-package company-quickhelp
+	    :ensure t))
+
 (use-package slime
   :ensure t
   :config (progn
 	    (setq inferior-lisp-program "/usr/local/opt/sbcl/bin/sbcl")
 	    (setq slime-contribs '(slime-fancy))))
+
+(use-package tuareg
+  :quelpa (tuareg
+	   :fetcher github
+	   :repo "ocaml/tuareg"
+	   :stable nil)
+  ;; from https://ocaml.org/learn/tutorials/get_up_and_running.html
+  :config (progn
+	    ;; Add opam emacs directory to the load-path
+	    (setq opam-share
+		  (substring
+		   (shell-command-to-string "opam config var share 2> /dev/null")
+		   0 -1))
+	    (add-to-list 'load-path (concat opam-share "/emacs/site-lisp"))
+
+	    ;; Add the opam lisp dir to the emacs load path
+	    (add-to-list
+	     'load-path
+	     (replace-regexp-in-string
+	      "\n" "/share/emacs/site-lisp"
+	      (shell-command-to-string "opam config var prefix")))
+	    ;; Automatically load utop.el
+	    (autoload 'utop "utop" "Toplevel for OCaml" t)
+	    (setq utop-command "opam config exec -- utop -emacs")
+
+	    (add-hook
+	     'tuareg-mode-hook
+	     (lambda ()
+	       ;; Load merlin-mode
+	       (require 'merlin)
+	       ;; Start merlin on ocaml files
+	       (add-hook 'tuareg-mode-hook 'merlin-mode t)
+	       (add-hook 'caml-mode-hook 'merlin-mode t)
+	       ;; Enable auto-complete
+	       (setq merlin-use-auto-complete-mode 'easy)
+	       ;; Use opam switch to lookup ocamlmerlin binary
+	       (setq merlin-command 'opam)
+	       (company-mode)
+	       (require 'ocp-indent)
+	       (autoload 'utop-minor-mode "utop" "Minor mode for utop" t)
+	       (autoload 'utop-setup-ocaml-buffer "utop" "Toplevel for OCaml" t)
+	       (autoload 'merlin-mode "merlin" "Merlin mode" t)
+	       (utop-minor-mode)
+	       (company-quickhelp-mode)
+	       ;; Important to note that setq-local is a macro and it needs to be
+	       ;; separate calls, not like setq
+	       (setq-local merlin-completion-with-doc t)
+	       (setq-local indent-tabs-mode nil)
+	       (setq-local show-trailing-whitespace t)
+	       (setq-local indent-line-function 'ocp-indent-line)
+	       (setq-local indent-region-function 'ocp-indent-region)
+	       (merlin-mode)))
+
+	    (add-hook 'utop-mode-hook (lambda ()
+					(set-process-query-on-exit-flag
+					 (get-process "utop") nil)))))
+
 
 (require 'org)
 (require 'ox-beamer)
