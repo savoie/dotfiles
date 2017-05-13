@@ -53,6 +53,14 @@
 	   :stable nil)
   ;; from https://ocaml.org/learn/tutorials/get_up_and_running.html
   :config (progn
+	    ;; Add opam bin directory to the exec-path
+	    (setq opam-bin
+		  (substring
+		   (shell-command-to-string "opam config var bin 2> /dev/null")
+		   0 -1))
+	    (setenv "PATH" (concat (getenv "PATH") ":" opam-bin))
+	    (add-to-list 'load-path (concat opam-bin))
+
 	    ;; Add opam emacs directory to the load-path
 	    (setq opam-share
 		  (substring
@@ -73,6 +81,8 @@
 	    (add-hook
 	     'tuareg-mode-hook
 	     (lambda ()
+	       (set (make-local-variable 'compile-command)
+		    (concat "ocamlc -c " (shell-quote-argument buffer-file-name)))
 	       ;; Load merlin-mode
 	       (require 'merlin)
 	       ;; Start merlin on ocaml files
@@ -84,6 +94,7 @@
 	       (setq merlin-command 'opam)
 	       (company-mode)
 	       (require 'ocp-indent)
+	       (setq tab-width 2)
 	       (autoload 'utop-minor-mode "utop" "Minor mode for utop" t)
 	       (autoload 'utop-setup-ocaml-buffer "utop" "Toplevel for OCaml" t)
 	       (autoload 'merlin-mode "merlin" "Merlin mode" t)
