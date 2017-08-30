@@ -1,3 +1,12 @@
+;; initialize frame appearance
+(setq inhibit-startup-screen t)
+(set-frame-parameter nil 'internal-border-width 35)
+(add-to-list 'default-frame-alist '(fullscreen . maximized))
+(menu-bar-mode -1)
+(tool-bar-mode -1)
+(toggle-scroll-bar -1)
+
+;; package management
 (require 'package)
 (setq package-enable-at-startup nil)
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
@@ -23,15 +32,26 @@
    :stable nil))
 (require 'quelpa-use-package)
 
-(use-package monokai-theme
+(use-package xresources-theme
   :ensure t
-  :pin melpa-stable)
+  :pin melpa
+  :config (let ((x-resource-class "XTerm"))
+	    (load-theme 'xresources)))
+
+(set-default-font "FantasqueSansMono-12")
+(setq-default letter-spacing 5)
+(setq-default line-spacing 2)
 
 (use-package linum-relative
   :ensure t
   :pin melpa-stable
-  :init (setq linum-relative-current-symbol "")
   :config (progn
+	    (setq linum-relative-current-symbol "")
+	    (set-face-bold 'linum-relative-current-face nil)
+	    (set-face-background 'linum-relative-current-face
+				 (face-attribute 'default :background))
+	    (set-face-foreground 'linum-relative-current-face
+				 (face-attribute 'default :foreground))
 	    (global-linum-mode nil)
 	    (linum-relative-on)))
 
@@ -45,74 +65,6 @@
   :config (progn
 	    (setq inferior-lisp-program "/usr/local/opt/sbcl/bin/sbcl")
 	    (setq slime-contribs '(slime-fancy))))
-
-(use-package tuareg
-  :quelpa (tuareg
-	   :fetcher github
-	   :repo "ocaml/tuareg"
-	   :stable nil)
-  ;; from https://ocaml.org/learn/tutorials/get_up_and_running.html
-  :config (progn
-	    ;; Add opam bin directory to the exec-path
-	    (setq opam-bin
-		  (substring
-		   (shell-command-to-string "opam config var bin 2> /dev/null")
-		   0 -1))
-	    (setenv "PATH" (concat (getenv "PATH") ":" opam-bin))
-	    (add-to-list 'load-path (concat opam-bin))
-
-	    ;; Add opam emacs directory to the load-path
-	    (setq opam-share
-		  (substring
-		   (shell-command-to-string "opam config var share 2> /dev/null")
-		   0 -1))
-	    (add-to-list 'load-path (concat opam-share "/emacs/site-lisp"))
-
-	    ;; Add the opam lisp dir to the emacs load path
-	    (add-to-list
-	     'load-path
-	     (replace-regexp-in-string
-	      "\n" "/share/emacs/site-lisp"
-	      (shell-command-to-string "opam config var prefix")))
-	    ;; Automatically load utop.el
-	    (autoload 'utop "utop" "Toplevel for OCaml" t)
-	    (setq utop-command "opam config exec -- utop -emacs")
-
-	    (add-hook
-	     'tuareg-mode-hook
-	     (lambda ()
-	       (set (make-local-variable 'compile-command)
-		    (concat "ocamlc -c " (shell-quote-argument buffer-file-name)))
-	       ;; Load merlin-mode
-	       (require 'merlin)
-	       ;; Start merlin on ocaml files
-	       (add-hook 'tuareg-mode-hook 'merlin-mode t)
-	       (add-hook 'caml-mode-hook 'merlin-mode t)
-	       ;; Enable auto-complete
-	       (setq merlin-use-auto-complete-mode 'easy)
-	       ;; Use opam switch to lookup ocamlmerlin binary
-	       (setq merlin-command 'opam)
-	       (company-mode)
-	       (require 'ocp-indent)
-	       (setq tab-width 2)
-	       (autoload 'utop-minor-mode "utop" "Minor mode for utop" t)
-	       (autoload 'utop-setup-ocaml-buffer "utop" "Toplevel for OCaml" t)
-	       (autoload 'merlin-mode "merlin" "Merlin mode" t)
-	       (utop-minor-mode)
-	       (company-quickhelp-mode)
-	       ;; Important to note that setq-local is a macro and it needs to be
-	       ;; separate calls, not like setq
-	       (setq-local merlin-completion-with-doc t)
-	       (setq-local indent-tabs-mode nil)
-	       (setq-local show-trailing-whitespace t)
-	       (setq-local indent-line-function 'ocp-indent-line)
-	       (setq-local indent-region-function 'ocp-indent-region)
-	       (merlin-mode)))
-
-	    (add-hook 'utop-mode-hook (lambda ()
-					(set-process-query-on-exit-flag
-					 (get-process "utop") nil)))))
-
 
 (require 'org)
 (require 'ox-beamer)
@@ -183,8 +135,8 @@
 
 	  (evil-mode 1)))
 
-;; Misc
+;; misc
 (add-hook 'before-save-hook 'whitespace-cleanup)
 (setq vc-follow-symlinks t)
-(setq inhibit-startup-screen t)
-(add-to-list 'default-frame-alist '(fullscreen . maximized))
+(setq mode-line-in-non-selected-windows nil)
+(set-face-attribute 'mode-line nil :box nil)
