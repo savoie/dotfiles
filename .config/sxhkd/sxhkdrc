@@ -4,11 +4,11 @@
 
 # terminal emulator
 super + Return
-	urxvt
+	termite
 
 # program launcher
 super + @space
-	dmenu_run
+	${HOME}/.local/bin/dmenu-wal
 
 # make sxhkd reload its configuration files:
 super + Escape
@@ -143,3 +143,11 @@ XF86MonBrightnessUp
 # decrease brightness
 XF86MonBrightnessDown
 	xbacklight -10
+
+# lock and sleep
+XF86PowerOff
+	systemctl suspend
+
+# lock and sleep
+super + XF86PowerOff
+	systemctl poweroff

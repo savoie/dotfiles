@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+
+# Source generated colors.
+source "${HOME}/.cache/wal/colors.sh"
+
+main() {
+	dmenu_run \
+		-nb "$color0" \
+		-nf "$color8" \
+		-sb "$color0" \
+		-sf "$color7" \
+		-fn "Fantasque Sans Mono-10"
+}
+
+main

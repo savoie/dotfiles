@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+
+# Source generated colors.
+source "${HOME}/.cache/wal/colors.sh"
+
+set_gtk() {
+	echo ".termite { background-color: ${background} }" > "${HOME}/.cache/wal/gtk-colors.css"
+}
+
+main() {
+	set_gtk &
+}
+
+main
