@@ -4,7 +4,7 @@
 
 # terminal emulator
 super + Return
-	termite
+	urxvt
 
 # program launcher
 super + @space
@@ -13,6 +13,10 @@ super + @space
 # make sxhkd reload its configuration files:
 super + Escape
 	pkill -USR1 -x sxhkd
+
+# refresh colour scheme
+super + shift + Escape
+	${HOME}/.local/bin/new-wal
 
 #
 # bspwm hotkeys
@@ -37,6 +41,14 @@ super + y
 # swap the current node and the biggest node
 super + g
 	bspc node -s biggest
+
+# circulate desktop
+super + {comma, period}
+	bspc node @/ -C {backward, forward}
+
+# rotate desktop
+super + ctrl + {comma, period}
+	bspc node @/ -R {-90, 90}
 
 #
 # state/flags
