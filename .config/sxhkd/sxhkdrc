@@ -160,6 +160,22 @@ XF86MonBrightnessDown
 XF86PowerOff
 	systemctl suspend
 
-# lock and sleep
+# power off
 super + XF86PowerOff
 	systemctl poweroff
+
+# media play/pause
+XF86AudioPlay
+	playerctl play-pause
+
+# media next
+XF86AudioNext
+	playerctl next
+
+# media prev
+XF86AudioPrev
+	playerctl previous
+
+# media stop
+XF86AudioStop
+	playerctl stop
