@@ -3,7 +3,7 @@ URxvt*transparency: false
 URxvt*externalBorder: 0px
 URxvt*internalBorder: 35px
 URxvt*font: xft:Fantasque Sans Mono-12
-URxvt*letterSpace: -2
+URxvt*letterSpace: -1
 
 ! Enables copy/paste with Ctrl-Shift-C/V
 URxvt.iso14755: false

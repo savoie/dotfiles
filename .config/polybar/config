@@ -1,5 +1,5 @@
 [settings]
-format-padding = 1
+format-padding = 0
 
 [bar/bottom]
 width = 100%
@@ -11,21 +11,27 @@ bottom = true
 background = ${xrdb:color0}
 foreground = ${xrdb:color7}
 
-spacing = -1
-padding-right = 0
-padding-left = 0
-module-margin-left = 0 
+padding = 1
+module-margin-left = 0
 module-margin-right = 0
 
 font-0 = FantasqueSansMono:size=10
 font-1 = fontawesome-webfont:size=10
 
 modules-left = bspwm
-modules-right = date battery volume
+modules-right = date padding battery-percentage battery ;padding volume
 
 wm-restack = bspwm
 
 ; MODULES
+[module/padding]
+type = custom/text
+
+; zero width space
+content = "​"
+
+content-padding = 1
+
 [module/date]
 type = internal/date
 
@@ -39,7 +45,7 @@ date = %b %-d
 ; Optional time format
 time = %-I:%M
 
-format =  <label>
+format = <label>
 label = %date% %time%
 
 [module/volume]
@@ -65,9 +71,26 @@ type = internal/battery
 battery = BAT1
 adapter = ACAD
 
-label-charging =  %percentage%%
-label-discharging =  %percentage%%
-label-full =  %percentage%%
+ramp-capacity-0 = 
+ramp-capacity-1 = 
+ramp-capacity-2 = 
+ramp-capacity-3 = 
+ramp-capacity-4 = 
+
+format-charging = <ramp-capacity>
+format-discharging = <ramp-capacity>
+label-full = 
+
+[module/battery-percentage]
+type = internal/battery
+
+; $ ls -1 /sys/class/power_supply/
+battery = BAT1
+adapter = ACAD
+
+label-charging = "%percentage%% "
+label-discharging = "%percentage%% "
+label-full = "100% "
 
 [module/bspwm]
 type = internal/bspwm
@@ -84,7 +107,7 @@ enable-click = false
 ; Create scroll handlers used to cycle workspaces
 enable-scroll = false
 
-; Set the scroll cycle direction 
+; Set the scroll cycle direction
 reverse-scroll = false
 
 ; Available tags:
