@@ -1,23 +1,27 @@
 ;; initialize frame appearance
 (setq inhibit-startup-screen t)
-(set-frame-parameter nil 'internal-border-width 35)
-(add-to-list 'default-frame-alist '(fullscreen . maximized))
+(setq default-frame-alist
+	     '((fullscreen . maximized)
+	       (font . "FantasqueSansMono-12")
+	       (vertical-scroll-bars . nil)
+	       (horizontal-scroll-bars . nil)))
 (menu-bar-mode -1)
 (tool-bar-mode -1)
-(toggle-scroll-bar -1)
 
 ;; package management
 (require 'package)
 (setq package-enable-at-startup nil)
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
 (add-to-list 'package-archives '("melpa-stable" . "https://stable.melpa.org/packages/"))
-(add-to-list 'package-archives '("marmalade" . "https://marmalade-repo.org/packages/"))
 (add-to-list 'package-archives '("gnu" . "https://elpa.gnu.org/packages/"))
 (package-initialize)
 
 (setq custom-file "~/.emacs.d/etc/custom.el")
 (when (not (file-exists-p custom-file))
-  (with-temp-buffer (write-file custom-file)))
+  (progn (let ((dir (file-name-directory custom-file)))
+	   (unless (file-exists-p dir)
+	     (make-directory dir t)))
+	 (with-temp-buffer (write-file custom-file))))
 (load custom-file :noerror)
 
 (unless (require 'quelpa nil t)
@@ -32,13 +36,26 @@
    :stable nil))
 (require 'quelpa-use-package)
 
-(use-package xresources-theme
-  :ensure t
-  :pin melpa
-  :config (let ((x-resource-class "XTerm"))
-	    (load-theme 'xresources)))
-
-(set-default-font "FantasqueSansMono-12")
+;; appearance
+; https://www.emacswiki.org/emacs/SettingFrameColorsForEmacsClient
+(defun frame-setup (&rest frame)
+  (if window-system
+      (let ((f (if (car frame)
+		   (car frame)
+		 (selected-frame))))
+	(progn
+	  (set-frame-parameter nil 'internal-border-width 35)
+	  (use-package xresources-theme
+	    :ensure t
+	    :pin melpa
+	    :config (let ((x-resource-class "XTerm"))
+		      (load-theme 'xresources)))
+	  (set-face-attribute 'mode-line nil :box nil)
+	  (set-face-background 'linum-relative-current-face
+			       (face-attribute 'default :background))
+	  (set-face-foreground 'linum-relative-current-face
+			       (face-attribute 'default :foreground))))))
+;
 (setq-default letter-spacing 5)
 (setq-default line-spacing 2)
 
@@ -48,13 +65,10 @@
   :config (progn
 	    (setq linum-relative-current-symbol "")
 	    (set-face-bold 'linum-relative-current-face nil)
-	    (set-face-background 'linum-relative-current-face
-				 (face-attribute 'default :background))
-	    (set-face-foreground 'linum-relative-current-face
-				 (face-attribute 'default :foreground))
 	    (global-linum-mode nil)
 	    (linum-relative-on)))
 
+;; tools
 (use-package company
   :ensure t
   :config (use-package company-quickhelp
@@ -139,4 +153,11 @@
 (add-hook 'before-save-hook 'whitespace-cleanup)
 (setq vc-follow-symlinks t)
 (setq mode-line-in-non-selected-windows nil)
-(set-face-attribute 'mode-line nil :box nil)
+
+;; set up new-frame hook for daemon
+(require 'server)
+(defadvice server-create-window-system-frame
+    (after set-window-system-frame-colors ())
+  (frame-setup))
+(ad-activate 'server-create-window-system-frame)
+(add-hook 'after-make-frame-functions 'frame-setup t)
