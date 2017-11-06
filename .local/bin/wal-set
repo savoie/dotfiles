@@ -3,33 +3,67 @@
 # Source generated colors.
 source "${HOME}/.cache/wal/colors.sh"
 
-reload_dunst() {
-	pkill dunst
-	dunst \
-		-lb "${color0}" \
-		-nb "${color0}" \
-		-cb "${color0}" \
-		-lf "${color7}" \
-		-bf "${color7}" \
-		-cf "${color7}" \
-		-nf "${color7}" \
-		-fn "Fantasque Sans Mono 10" \
-		-geometry "350x30-70+70" \
-		-markup "full" \
-		-hide_duplicates_count "true" \
-		-word_wrap "true" \
-		-separator_height "0" \
-		-padding "35" \
-		-horizontal_padding "35" &
+set_emacs() {
+    echo "(require 'base16-theme)
+
+    (defun set-wal-colors () (setq base16-wal-colors
+	'(:base00 \"$color0\"
+	:base01 \"$color1\"
+	:base02 \"$color2\"
+	:base03 \"$color3\"
+	:base04 \"$color4\"
+	:base05 \"$color5\"
+	:base06 \"$color6\"
+	:base07 \"$color7\"
+	:base08 \"$color8\"
+	:base09 \"$color9\"
+	:base0A \"$color10\"
+	:base0B \"$color11\"
+	:base0C \"$color12\"
+	:base0D \"$color13\"
+	:base0E \"$color14\"
+	:base0F \"$color15\")))
+
+    (defvar base16-wal-colors nil \"All colors for base16-wal are defined here.\")
+    (set-wal-colors)
+
+    ;; Define the theme
+    (deftheme base16-wal)
+
+    ;; Add all the faces to the theme
+    (base16-theme-define 'base16-wal base16-wal-colors)
+
+    ;; Mark the theme as provided
+    (provide-theme 'base16-wal)
+
+    (provide 'base16-wal)" > "${HOME}/.cache/wal/base16-wal-theme.el"
+
+    emacsclient --eval "(theme-refresh)"
 }
 
-set_gtk() {
-	echo ".termite { background-color: ${background} }" > "${HOME}/.cache/wal/gtk-colors.css"
+reload_dunst() {
+    pkill dunst
+    dunst \
+	-lb "${color0}" \
+	-nb "${color0}" \
+	-cb "${color0}" \
+	-lf "${color7}" \
+	-bf "${color7}" \
+	-cf "${color7}" \
+	-nf "${color7}" \
+	-fn "Fantasque Sans Mono 10" \
+	-geometry "350x30-70+70" \
+	-markup "full" \
+	-hide_duplicates_count "true" \
+	-word_wrap "true" \
+	-separator_height "0" \
+	-padding "35" \
+	-horizontal_padding "35" &
 }
 
 main() {
-	set_gtk &
-	reload_dunst &
+    set_emacs &
+    reload_dunst &
 }
 
 main

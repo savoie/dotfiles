@@ -1,12 +1,12 @@
 ;; initialize frame appearance
+
 (setq inhibit-startup-screen t)
 (setq default-frame-alist
 	     '((fullscreen . maximized)
 	       (font . "FantasqueSansMono-12")
 	       (vertical-scroll-bars . nil)
-	       (horizontal-scroll-bars . nil)))
-(menu-bar-mode -1)
-(tool-bar-mode -1)
+	       (horizontal-scroll-bars . nil)
+	       (internal-border-width . 35)))
 
 ;; package management
 (require 'package)
@@ -36,26 +36,36 @@
    :stable nil))
 (require 'quelpa-use-package)
 
+(use-package base16-theme
+  :ensure t
+  :pin melpa-stable
+  :init (add-to-list 'custom-theme-load-path "~/.cache/wal/")
+  :config (load-theme 'base16-wal t))
+
 ;; appearance
 ; https://www.emacswiki.org/emacs/SettingFrameColorsForEmacsClient
-(defun frame-setup (&rest frame)
+(defun frame-setup ()
   (if window-system
-      (let ((f (if (car frame)
-		   (car frame)
-		 (selected-frame))))
 	(progn
-	  (set-frame-parameter nil 'internal-border-width 35)
-	  (use-package xresources-theme
-	    :ensure t
-	    :pin melpa
-	    :config (let ((x-resource-class "XTerm"))
-		      (load-theme 'xresources)))
 	  (set-face-attribute 'mode-line nil :box nil)
+	  (menu-bar-mode -1)
+	  (tool-bar-mode -1)
 	  (set-face-background 'linum-relative-current-face
 			       (face-attribute 'default :background))
 	  (set-face-foreground 'linum-relative-current-face
-			       (face-attribute 'default :foreground))))))
-;
+			       (face-attribute 'default :foreground)))))
+(defun theme-refresh ()
+  (progn
+    (load-theme 'base16-wal t)
+    (set-face-attribute 'fringe nil
+			 :background nil)
+    (set-face-attribute 'linum nil
+			:background (face-attribute 'default :background)
+			:foreground (face-attribute 'default :foreground))
+    (set-face-attribute 'linum-relative-current-face nil
+			:background (face-attribute 'default :background)
+			:foreground (face-attribute 'default :foreground))))
+
 (setq-default letter-spacing 5)
 (setq-default line-spacing 2)
 
@@ -154,10 +164,11 @@
 (setq vc-follow-symlinks t)
 (setq mode-line-in-non-selected-windows nil)
 
-;; set up new-frame hook for daemon
+;; set up new-frame hooks
+; first frame opening
 (require 'server)
 (defadvice server-create-window-system-frame
     (after set-window-system-frame-colors ())
   (frame-setup))
 (ad-activate 'server-create-window-system-frame)
-(add-hook 'after-make-frame-functions 'frame-setup t)
+(add-hook 'after-make-frame-functions (lambda (&rest frame) (frame-setup)))
