@@ -1,14 +1,4 @@
-;; initialize frame appearance
-
-(setq inhibit-startup-screen t)
-(setq default-frame-alist
-	     '((fullscreen . maximized)
-	       (font . "FantasqueSansMono-12")
-	       (vertical-scroll-bars . nil)
-	       (horizontal-scroll-bars . nil)
-	       (internal-border-width . 35)))
-
-;; package management
+;;; package management
 (require 'package)
 (setq package-enable-at-startup nil)
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
@@ -36,38 +26,22 @@
    :stable nil))
 (require 'quelpa-use-package)
 
+;;; appearance
+(setq inhibit-startup-screen t)
+(setq default-frame-alist
+      '((fullscreen . maximized)
+	(font . "FantasqueSansMono-12")
+	(vertical-scroll-bars . nil)
+	(horizontal-scroll-bars . nil)
+	(internal-border-width . 35)))
+(menu-bar-mode -1)
+(tool-bar-mode -1)
+
 (use-package base16-theme
   :ensure t
   :pin melpa-stable
-  :init (add-to-list 'custom-theme-load-path "~/.cache/wal/")
-  :config (load-theme 'base16-wal t))
-
-;; appearance
-; https://www.emacswiki.org/emacs/SettingFrameColorsForEmacsClient
-(defun frame-setup ()
-  (if window-system
-	(progn
-	  (set-face-attribute 'mode-line nil :box nil)
-	  (menu-bar-mode -1)
-	  (tool-bar-mode -1)
-	  (set-face-background 'linum-relative-current-face
-			       (face-attribute 'default :background))
-	  (set-face-foreground 'linum-relative-current-face
-			       (face-attribute 'default :foreground)))))
-(defun theme-refresh ()
-  (progn
-    (load-theme 'base16-wal t)
-    (set-face-attribute 'fringe nil
-			 :background nil)
-    (set-face-attribute 'linum nil
-			:background (face-attribute 'default :background)
-			:foreground (face-attribute 'default :foreground))
-    (set-face-attribute 'linum-relative-current-face nil
-			:background (face-attribute 'default :background)
-			:foreground (face-attribute 'default :foreground))))
-
-(setq-default letter-spacing 5)
-(setq-default line-spacing 2)
+  :init (add-to-list 'custom-theme-load-path "~/.cache/wal/"))
+					;:config (load-theme 'base16-wal t))
 
 (use-package linum-relative
   :ensure t
@@ -78,7 +52,25 @@
 	    (global-linum-mode nil)
 	    (linum-relative-on)))
 
-;; tools
+(defun refresh-theme ()
+  (progn
+    (load-theme 'base16-wal t)
+    (set-face-attribute 'fringe nil
+			:background nil)
+    (set-face-attribute 'mode-line nil
+			:background nil)
+    (set-face-attribute 'linum nil
+			:background (face-attribute 'default :background)
+			:foreground (face-attribute 'default :foreground))
+    (set-face-attribute 'linum-relative-current-face nil
+			:background (face-attribute 'default :background)
+			:foreground (face-attribute 'default :foreground))))
+
+(setq-default letter-spacing 5)
+(setq-default line-spacing 2)
+(refresh-theme)
+
+;;; tools
 (use-package company
   :ensure t
   :config (use-package company-quickhelp
@@ -159,16 +151,16 @@
 
 	  (evil-mode 1)))
 
-;; misc
+;;; misc
 (add-hook 'before-save-hook 'whitespace-cleanup)
 (setq vc-follow-symlinks t)
 (setq mode-line-in-non-selected-windows nil)
 
-;; set up new-frame hooks
-; first frame opening
+;; set up new-frame hooks, see
+;; https://www.emacswiki.org/emacs/SettingFrameColorsForEmacsClient
 (require 'server)
 (defadvice server-create-window-system-frame
     (after set-window-system-frame-colors ())
-  (frame-setup))
+  (refresh-theme))
 (ad-activate 'server-create-window-system-frame)
-(add-hook 'after-make-frame-functions (lambda (&rest frame) (frame-setup)))
+(add-hook 'after-make-frame-functions (lambda (&rest frame) (refresh-theme)))

@@ -38,7 +38,7 @@ set_emacs() {
 
     (provide 'base16-wal)" > "${HOME}/.cache/wal/base16-wal-theme.el"
 
-    emacsclient --eval "(theme-refresh)"
+    emacsclient --eval "(refresh-theme)"
 }
 
 reload_dunst() {
