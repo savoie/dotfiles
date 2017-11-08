@@ -62,8 +62,9 @@ reload_dunst() {
 }
 
 main() {
-    set_emacs &
     reload_dunst &
+    set_emacs &
+    wait
 }
 
 main
