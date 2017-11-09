@@ -41,7 +41,6 @@
   :ensure t
   :pin melpa-stable
   :init (add-to-list 'custom-theme-load-path "~/.cache/wal/"))
-					;:config (load-theme 'base16-wal t))
 
 (use-package linum-relative
   :ensure t

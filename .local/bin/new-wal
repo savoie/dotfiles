@@ -3,6 +3,12 @@
 # Choose a random new wallpaper from wallpaper directory
 new_bg=${HOME}/.local/share/img/$(ls ${HOME}/.local/share/img/ | shuf -n 1)
 
+# Tag the currently focused window so that compton won't make it transparent
+# when feh opens.
+# This prevents a flicker when refocusing after feh is killed.
+curr_window_id=$(xprop -root _NET_ACTIVE_WINDOW | awk '{ print $5 }')
+xprop -id ${curr_window_id} -f FORCE_OPAQUE 32a -set FORCE_OPAQUE FORCE_OPAQUE
+
 # Hackily "stop repainting" by taking a screenshot
 # and displaying it full screen. This reduces flickering
 # and syncs up all the distinct theme updates at the cost
@@ -24,7 +30,8 @@ pids+=($!)
 # Wait for colour scheme and wallpaper to be set
 wait ${pids[@]}
 
-sleep 0.5  # polybar is slow to restart
-
 # "Repaint screen"
 kill $feh_pid
+
+# Untag window
+xprop -id ${curr_window_id} -remove FORCE_OPAQUE

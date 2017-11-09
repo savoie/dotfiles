@@ -124,3 +124,6 @@ export NO_AT_BRIDGE=1
 
 # Alias dotfile config
 alias .git='git --git-dir=${HOME}/.gitdots/ --work-tree=${HOME}'
+
+# Alias emacs
+alias emacs='emacsclient -c'
