@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
 
+source .cache/wal/colors.sh
+
 # Choose a random new wallpaper from wallpaper directory
-new_bg=${HOME}/.local/share/img/$(ls ${HOME}/.local/share/img/ | shuf -n 1)
+new_bg=$(ls -d ${HOME}/.local/share/img/* | grep -v $wallpaper | shuf -n 1)
 
 # Tag the currently focused window so that compton won't make it transparent
 # when feh opens.
