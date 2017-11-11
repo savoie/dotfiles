@@ -72,12 +72,18 @@
 (setq ido-everywhere t)
 (ido-mode 1)
 
+(use-package smex
+  :ensure t)
+
 (use-package ivy
   :ensure t
   :pin elpa
   :config
+  (ivy-mode t)
   (setq ivy-use-virtual-buffers t)
-  (ivy-mode t))
+  (setq ivy-count-format "")
+  (setq ivy-height 5)
+  (setq ivy-re-builders-alist '((t . ivy--regex-ignore-order))))
 
 (use-package company
   :ensure t
@@ -130,6 +136,10 @@
 	    (define-key minibuffer-local-isearch-map [escape] 'keyboard-escape-quit)
 	    (define-key minibuffer-local-isearch-map [escape] 'keyboard-escape-quit)
 	    (define-key ivy-minibuffer-map [escape] 'minibuffer-keyboard-quit)
+
+	    ;; Smex
+	    (define-key evil-motion-state-map ";" 'counsel-M-x)
+
 
 	    ;; j/k on visual lines
 	    (define-key evil-normal-state-map (kbd "j") 'evil-next-visual-line)
