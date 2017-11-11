@@ -3,7 +3,7 @@
 (setq package-enable-at-startup nil)
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
 (add-to-list 'package-archives '("melpa-stable" . "https://stable.melpa.org/packages/"))
-(add-to-list 'package-archives '("gnu" . "https://elpa.gnu.org/packages/"))
+(add-to-list 'package-archives '("elpa" . "https://elpa.gnu.org/packages/"))
 (package-initialize)
 
 (setq custom-file "~/.emacs.d/etc/custom.el")
@@ -42,6 +42,49 @@
   :pin melpa-stable
   :init (add-to-list 'custom-theme-load-path "~/.cache/wal/"))
 
+(defun refresh-theme ()
+  (load-theme 'base16-wal t)
+  (set-face-attribute 'fringe nil
+		      :background nil)
+  (set-face-attribute 'ivy-current-match nil
+		      :background (plist-get base16-wal-colors :base02)
+		      :foreground (face-attribute 'default :background))
+  (set-face-attribute 'company-tooltip nil
+		      :foreground (plist-get base16-wal-colors :base02)
+		      :background (face-attribute 'default :foreground))
+  (set-face-attribute 'company-tooltip-common nil
+		      :foreground (face-attribute 'default :background))
+  (set-face-attribute 'mode-line nil
+		      :background nil)
+  (set-face-attribute 'linum nil
+		      :background (face-attribute 'default :background)
+		      :foreground (face-attribute 'default :foreground))
+  (set-face-attribute 'linum-relative-current-face nil
+		      :background (face-attribute 'default :background)
+		      :foreground (face-attribute 'default :foreground)))
+
+(setq-default letter-spacing 5)
+(setq-default line-spacing 2)
+
+;;; tools
+
+(setq ido-enable-flex-matching t)
+(setq ido-everywhere t)
+(ido-mode 1)
+
+(use-package ivy
+  :ensure t
+  :pin elpa
+  :config
+  (setq ivy-use-virtual-buffers t)
+  (ivy-mode t))
+
+(use-package company
+  :ensure t
+  :config
+  (use-package company-quickhelp :ensure t)
+  (company-mode t))
+
 (use-package linum-relative
   :ensure t
   :pin melpa-stable
@@ -51,29 +94,9 @@
 	    (global-linum-mode nil)
 	    (linum-relative-on)))
 
-(defun refresh-theme ()
-  (progn
-    (load-theme 'base16-wal t)
-    (set-face-attribute 'fringe nil
-			:background nil)
-    (set-face-attribute 'mode-line nil
-			:background nil)
-    (set-face-attribute 'linum nil
-			:background (face-attribute 'default :background)
-			:foreground (face-attribute 'default :foreground))
-    (set-face-attribute 'linum-relative-current-face nil
-			:background (face-attribute 'default :background)
-			:foreground (face-attribute 'default :foreground))))
-
-(setq-default letter-spacing 5)
-(setq-default line-spacing 2)
-(refresh-theme)
-
-;;; tools
-(use-package company
+(use-package rainbow-mode
   :ensure t
-  :config (use-package company-quickhelp
-	    :ensure t))
+  :config (rainbow-mode))
 
 (use-package slime
   :ensure t
@@ -105,6 +128,8 @@
 	    (define-key minibuffer-local-completion-map [escape] 'keyboard-escape-quit)
 	    (define-key minibuffer-local-must-match-map [escape] 'keyboard-escape-quit)
 	    (define-key minibuffer-local-isearch-map [escape] 'keyboard-escape-quit)
+	    (define-key minibuffer-local-isearch-map [escape] 'keyboard-escape-quit)
+	    (define-key ivy-minibuffer-map [escape] 'minibuffer-keyboard-quit)
 
 	    ;; j/k on visual lines
 	    (define-key evil-normal-state-map (kbd "j") 'evil-next-visual-line)
@@ -154,6 +179,8 @@
 (add-hook 'before-save-hook 'whitespace-cleanup)
 (setq vc-follow-symlinks t)
 (setq mode-line-in-non-selected-windows nil)
+(setq minibuffer-message-timeout 0)
+(refresh-theme)
 
 ;; set up new-frame hooks, see
 ;; https://www.emacswiki.org/emacs/SettingFrameColorsForEmacsClient
