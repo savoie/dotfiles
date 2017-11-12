@@ -89,7 +89,8 @@
   :ensure t
   :config
   (use-package company-quickhelp :ensure t)
-  (company-mode t))
+  (company-mode t)
+  (setq company-minimum-prefix-length 3))
 
 (use-package linum-relative
   :ensure t

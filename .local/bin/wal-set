@@ -7,14 +7,14 @@ set_emacs() {
     echo "(require 'base16-theme)
 
     (defun set-wal-colors () (setq base16-wal-colors
-	'(:base00 \"$color0\"
+	'(:base00 \"$color0\" ; background
 	:base01 \"$color1\"
 	:base02 \"$color2\"
 	:base03 \"$color3\"
 	:base04 \"$color4\"
-	:base05 \"$color5\"
+	:base05 \"$color7\" ; foreground
 	:base06 \"$color6\"
-	:base07 \"$color7\"
+	:base07 \"$color5\"
 	:base08 \"$color8\"
 	:base09 \"$color9\"
 	:base0A \"$color10\"
