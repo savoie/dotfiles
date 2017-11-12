@@ -7,8 +7,8 @@ super + Return
 	urxvt
 
 # program launcher
-super + @space
-	${HOME}/.local/bin/dmenu-wal
+super + {_, shift + } @space
+	rofi -show {run, window}
 
 # make sxhkd reload its configuration files:
 super + Escape

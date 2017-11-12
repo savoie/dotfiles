@@ -11,3 +11,9 @@ URxvt.iso14755_52: false
 URxvt.perl-ext-common: default,clipboard
 URxvt.keysym.Shift-Control-C: perl:clipboard:copy
 URxvt.keysym.Shift-Control-V: perl:clipboard:paste
+
+rofi*run-command: bash -ic {cmd}
+rofi*font: Fantasque Sans Mono 12
+rofi*separator-style: none
+rofi*hide-scrollbar: true
+rofi*lines: 3
