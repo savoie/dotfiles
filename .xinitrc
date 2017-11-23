@@ -53,7 +53,9 @@ wal -i ${HOME}/.local/share/img/ -o ${HOME}/.local/bin/wal-set
 
 compton --config ${HOME}/.config/compton/compton.conf -b
 unclutter --timeout 3 -b
+xsetroot -cursor_name left_ptr
 .local/bin/notifications &
+/usr/bin/dropbox &
 
 \emacs --daemon
 

@@ -78,6 +78,8 @@
 (use-package ivy
   :ensure t
   :pin elpa
+  :diminish ivy-mode
+  :diminish counsel-mode
   :config
   (ivy-mode t)
   (setq ivy-use-virtual-buffers t)
@@ -87,10 +89,12 @@
 
 (use-package company
   :ensure t
+  :diminish company-mode
   :config
   (use-package company-quickhelp :ensure t)
-  (company-mode t)
-  (setq company-minimum-prefix-length 3))
+  (global-company-mode 1)
+  (setq company-minimum-prefix-length 3)
+  (global-set-key "\t" 'company-complete-common))
 
 (use-package linum-relative
   :ensure t
@@ -103,6 +107,7 @@
 
 (use-package rainbow-mode
   :ensure t
+  :diminish rainbow-mode
   :config (rainbow-mode))
 
 (use-package slime
@@ -117,6 +122,8 @@
 (setq org-agenda-files '("~/org"))
 (setq org-agenda-window-setup 'current-window)
 (setq org-default-notes-file (concat org-directory "/notes.org"))
+(setq org-todo-keywords
+      '((sequence "TODO" "BLOCK" "|" "DONE" "DELEG")))
 
 (setq org-agenda-default-appointment-duration 15)
 (setq org-icalendar-combined-agenda-file "~/org/agenda.ics")
@@ -192,6 +199,7 @@
 (setq mode-line-in-non-selected-windows nil)
 (setq minibuffer-message-timeout 0)
 (refresh-theme)
+(diminish 'undo-tree-mode)
 
 ;; set up new-frame hooks, see
 ;; https://www.emacswiki.org/emacs/SettingFrameColorsForEmacsClient
