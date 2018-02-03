@@ -1,0 +1,35 @@
+#!/bin/bash
+
+source $HOME/.cache/wal/colors.sh
+
+PANEL_FIFO="/tmp/panel-fifo"
+if [ -e "$PANEL_FIFO" ]; then
+    rm "$PANEL_FIFO"
+fi
+mkfifo "$PANEL_FIFO"
+
+clock () {
+    while true; do
+	echo "C"
+	sleep 1
+    done
+}
+
+# subscribe to event stream for window manager
+bspc subscribe report > "$PANEL_FIFO" &
+
+# trigger updates every second of things without event streams (date, battery)
+clock > "$PANEL_FIFO" &
+
+${HOME}/.local/bin/lemonbar-input < "$PANEL_FIFO" | lemonbar \
+    -g x15 \
+    -o 1 \
+    -f "FantasqueSansMono:size=9.5" \
+    -o 0 \
+    -f "fontawesome-webfont:size=9.5" \
+    -B "${color0}" \
+    -F "${color7}" \
+    -a 0 \
+    -b
+
+wait

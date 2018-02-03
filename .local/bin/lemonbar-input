@@ -1,0 +1,84 @@
+#!/bin/bash
+
+source $HOME/.cache/wal/colors.sh
+
+red="#993333"
+
+# FIXME: single-monitor only
+parse_wm_report() {
+    buffer=""
+
+    IFS=":"
+    report=($1)
+    unset ifs
+
+    for i in "${!report[@]}"; do
+	case "${report[$i]}" in
+	    [OF]*) # focused
+		buffer="${buffer}${i} "
+		;;
+	    o*) # occupied
+		buffer="${buffer}%{F${color2}}${i}%{F-} "
+		;;
+	    [Ff]*) # free
+		buffer="${buffer}%{F${color8}}${i}%{F-} "
+		;;
+	    [Uu]*) # urgent
+		buffer="${buffer}%{F${red}}${i}%{F-} "
+		;;
+	esac
+    done
+
+    echo "${buffer}"
+}
+
+get_date() {
+    date '+%b %-d %-I:%M'
+}
+
+get_battery() {
+    BATC=/sys/class/power_supply/BAT1/capacity
+    BATS=/sys/class/power_supply/BAT1/status
+    icons=("" "" "" "" "")
+
+    status=$(sed -n p ${BATS})
+    capacity=$(sed -n p ${BATC})
+
+    buffer="${capacity}%"
+
+    # Display red if low battery and not charging
+    if [[ $status != "Charging" && $capacity -lt 15 ]]; then
+	buffer="${buffer}%{F${red}}"
+    # Display secondary colour if not charging
+    elif [[ $status != "Charging" && $capacity -lt 100 ]]; then
+	buffer="${buffer}%{F${color2}}"
+    fi
+
+    if [[ $capacity -lt 10 ]]; then
+	buffer="${buffer} ${icons[0]}"
+    elif [[ $capacity -lt 30 ]]; then
+	buffer="${buffer} ${icons[1]}"
+    elif [[ $capacity -lt 60 ]]; then
+	buffer="${buffer} ${icons[2]}"
+    elif [[ $capacity -lt 90 ]]; then
+	buffer="${buffer} ${icons[3]}"
+    else
+	buffer="${buffer} ${icons[4]}"
+    fi
+    buffer="${buffer}%{F-}"
+
+    echo "${buffer}"
+}
+
+while read -r input; do
+    case $input in
+    W*)
+	wm_display=$(parse_wm_report "${input#?}")
+	;;
+    C*) # clock signal
+	date_display=$(get_date)
+	battery_display=$(get_battery)
+	;;
+    esac
+    echo " ${wm_display}%{r}${date_display} ${battery_display} "
+done

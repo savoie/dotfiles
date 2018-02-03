@@ -32,6 +32,10 @@ pids+=($!)
 # Wait for colour scheme and wallpaper to be set
 wait ${pids[@]}
 
+# Reload lemonbar (last thing, because it's so quick)
+pkill lemonbar
+${HOME}/.local/bin/lemonbar-run &
+
 # "Repaint screen"
 kill $feh_pid
 
