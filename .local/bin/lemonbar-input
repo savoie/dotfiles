@@ -70,6 +70,24 @@ get_battery() {
     echo "${buffer}"
 }
 
+get_wifi() {
+    ssid=$(iw dev wlp2s0 link | grep SSID | sed 's/.*: //')
+    if [[ -z $ssid ]]; then
+	echo "%{F${color2}}×%{F-}"
+    else
+	echo " ${ssid}"
+    fi
+}
+
+get_volume() {
+    sound_info=($(amixer -D pulse get Master | sed -n "s/.*\[\(.*\)%\].*\[\(.*\)\].*/\1 \2/p" | uniq))
+    if [[ "${sound_info[1]}" == "off" ]]; then
+       echo "%{F${color2}}×%{F-}"
+    else
+       echo " ${sound_info[0]}%"
+    fi
+}
+
 while read -r input; do
     case $input in
     W*)
@@ -78,7 +96,9 @@ while read -r input; do
     C*) # clock signal
 	date_display=$(get_date)
 	battery_display=$(get_battery)
+	wifi_display=$(get_wifi)
+	volume_display=$(get_volume)
 	;;
     esac
-    echo " ${wm_display}%{r}${date_display} ${battery_display} "
+    echo " ${wm_display}%{r}${date_display}  ${wifi_display}  ${volume_display}  ${battery_display} "
 done
