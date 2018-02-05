@@ -136,6 +136,10 @@ super + {Left,Down,Up,Right}
 # system
 #
 
+# lock screen
+ctrl + shift + l
+	sxlock -f "-misc-fantasque sans mono-medium-r-normal--0-100-0-0-M-0-*-*"
+
 # raise volume
 XF86AudioRaiseVolume
 	amixer -D pulse set Master 2%+ unmute

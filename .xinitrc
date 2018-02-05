@@ -48,18 +48,21 @@ if [ -d /etc/X11/xinit/xinitrc.d ] ; then
  unset f
 fi
 
-export SXHKD_SHELL='/bin/sh'
-sxhkd &
-
+unclutter --timeout 3 -b
+xsetroot -cursor_name left_ptr
 # set wal (no need for whole wal-set command on initial startup)
 wal -i ${HOME}/.local/share/img/ -o ${HOME}/.local/bin/wal-set
 
+sxlock -f "-misc-fantasque sans mono-medium-r-normal--0-100-0-0-M-0-*-*"
+
+export SXHKD_SHELL='/bin/sh'
+sxhkd &
+
 compton --config ${HOME}/.config/compton/compton.conf -b
-unclutter --timeout 3 -b
-xsetroot -cursor_name left_ptr
 .local/bin/notifications &
 /usr/bin/dropbox &
 
-\emacs --daemon
+\emacs --daemon &
+alias emacs='emacsclient -c'
 
 exec bspwm
