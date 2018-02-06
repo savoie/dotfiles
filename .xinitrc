@@ -55,7 +55,7 @@ wal -i ${HOME}/.local/share/img/ -o ${HOME}/.local/bin/wal-set
 
 sxlock -f "-misc-fantasque sans mono-medium-r-normal--0-100-0-0-M-0-*-*"
 
-export SXHKD_SHELL='/bin/sh'
+set SXHKD_SHELL="/bin/sh"
 sxhkd &
 
 compton --config ${HOME}/.config/compton/compton.conf -b
@@ -63,6 +63,5 @@ compton --config ${HOME}/.config/compton/compton.conf -b
 /usr/bin/dropbox &
 
 \emacs --daemon &
-alias emacs='emacsclient -c'
 
 exec bspwm

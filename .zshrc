@@ -90,7 +90,4 @@ bindkey "kj" vi-cmd-mode
   done
 }
 
-# aliases
-alias .git='git --git-dir=${HOME}/.gitdots/ --work-tree=${HOME}'
-alias emacs='emacsclient -c'
-alias sxlock='sxlock -f "-misc-fantasque sans mono-medium-r-normal--0-100-0-0-M-0-*-*"'
+source ${HOME}/.aliases
