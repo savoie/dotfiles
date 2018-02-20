@@ -35,12 +35,9 @@ super + m
 	bspc desktop -l next
 
 # if the current node is automatic, send it to the last manual, otherwise pull the last leaf
+# (send current node to presel if possible, or pull last node into current node)
 super + y
 	bspc query -N -n focused.automatic && bspc node -n last.!automatic || bspc node last.leaf -n focused
-
-# swap the current node and the biggest node
-super + g
-	bspc node -s biggest
 
 # circulate desktop
 super + {comma, period}
@@ -58,15 +55,11 @@ super + ctrl + {comma, period}
 super + {t,shift + t,s,f}
 	bspc node -t {tiled,pseudo_tiled,floating,fullscreen}
 
-# set the node flags
-super + ctrl + {x,y,z}
-	bspc node -g {locked,sticky,private}
-
 #
 # focus/swap
 #
 
-# focus the node in the given direction
+# focus / send the node in the given direction
 super + {_,shift + }{h,j,k,l}
 	bspc node -{f,s} {west,south,north,east}
 
@@ -132,6 +125,10 @@ super + alt + shift + {h,j,k,l}
 super + {Left,Down,Up,Right}
 	bspc node -v {-20 0,0 20,0 -20,20 0}
 
+# expand to fill empty space
+super + {minus,equal}
+	bspc config -d focused window_gap {35,0}
+
 #
 # system
 #
@@ -148,7 +145,7 @@ XF86AudioRaiseVolume
 XF86AudioLowerVolume
 	amixer -D pulse set Master 2%- unmute
 
-# mute
+# mute - FIXME (doesn't toggle LED)
 XF86AudioMute
 	amixer -D pulse set Master 1+ toggle
 
