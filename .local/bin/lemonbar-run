@@ -15,8 +15,18 @@ clock () {
     done
 }
 
+music () {
+    dbus-monitor "type='signal',path='/org/mpris/MediaPlayer2',member='PropertiesChanged'" |
+    while read -r line; do
+	echo "M"
+    done
+}
+
 # subscribe to event stream for window manager
 bspc subscribe report > "$PANEL_FIFO" &
+
+# subscribe to music event stream
+music > "$PANEL_FIFO" &
 
 # trigger updates every second of things without event streams (date, battery)
 clock > "$PANEL_FIFO" &

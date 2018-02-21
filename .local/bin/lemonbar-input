@@ -32,6 +32,21 @@ parse_wm_report() {
     echo "${buffer}"
 }
 
+get_music() {
+    title=$(playerctl metadata title)
+    artist=$(playerctl metadata artist)
+    buffer="${title} - ${artist} "
+
+    status=$(playerctl status)
+    if [[ "${status}" == "Playing" ]]; then
+	buffer="${buffer}"
+    elif [[ "${status}" == "Paused" ]]; then
+	buffer="${buffer}"
+    fi
+
+    echo "${buffer}"
+}
+
 get_date() {
     date '+%b %-d %-I:%M'
 }
@@ -91,14 +106,21 @@ get_volume() {
 while read -r input; do
     case $input in
     W*)
-	wm_display=$(parse_wm_report "${input#?}")
+	wm_display=$(parse_wm_report "${input}")
+	;;
+    M*)
+	music_display=$(get_music)
 	;;
     C*) # clock signal
 	date_display=$(get_date)
 	battery_display=$(get_battery)
 	wifi_display=$(get_wifi)
 	volume_display=$(get_volume)
+
+	if [[ -z $(playerctl -l) ]]; then
+	    music_display=""
+	fi
 	;;
     esac
-    echo " ${wm_display}%{r}${date_display}  ${wifi_display}  ${volume_display}  ${battery_display} "
+    echo " ${wm_display}%{c}${music_display}%{r}${date_display}  ${wifi_display}  ${volume_display}  ${battery_display} "
 done
