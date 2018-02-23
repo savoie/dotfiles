@@ -35,14 +35,9 @@ parse_wm_report() {
 get_music() {
     title=$(playerctl metadata title)
     artist=$(playerctl metadata artist)
-    buffer="${title} - ${artist} "
-
     status=$(playerctl status)
-    if [[ "${status}" == "Playing" ]]; then
-	buffer="${buffer}"
-    elif [[ "${status}" == "Paused" ]]; then
-	buffer="${buffer}"
-    fi
+
+    buffer="${title} - ${artist} %{T3}(${status,,}%{T-})"
 
     echo "${buffer}"
 }

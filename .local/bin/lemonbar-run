@@ -37,6 +37,8 @@ ${HOME}/.local/bin/lemonbar-input < "$PANEL_FIFO" | lemonbar \
     -f "FantasqueSansMono:size=9.5" \
     -o 0 \
     -f "fontawesome-webfont:size=9.5" \
+    -o 1 \
+    -f "FantasqueSansMono:size=9.5:style=italic" \
     -B "${color0}" \
     -F "${color7}" \
     -a 0 \
