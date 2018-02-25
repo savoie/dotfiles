@@ -4,7 +4,6 @@ source $HOME/.cache/wal/colors.sh
 
 red="#993333"
 
-# FIXME: single-monitor only
 parse_wm_report() {
     buffer=""
 
@@ -12,27 +11,42 @@ parse_wm_report() {
     report=($1)
     unset ifs
 
+    desktop=1
+    monitor=0
     for i in "${!report[@]}"; do
 	case "${report[$i]}" in
 	    [OF]*) # focused
-		buffer="${buffer}${i} "
+		buffer="${buffer}${desktop} "
+		desktop=$((desktop+1))
 		;;
 	    o*) # occupied
-		buffer="${buffer}%{F${color2}}${i}%{F-} "
+		buffer="${buffer}%{F${color2}}${desktop}%{F-} "
+		desktop=$((desktop+1))
 		;;
 	    [Ff]*) # free
-		buffer="${buffer}%{F${color8}}${i}%{F-} "
+		buffer="${buffer}%{F${color8}}${desktop}%{F-} "
+		desktop=$((desktop+1))
 		;;
 	    [Uu]*) # urgent
-		buffer="${buffer}%{F${red}}${i}%{F-} "
+		buffer="${buffer}%{F${red}}${desktop}%{F-} "
+		desktop=$((desktop+1))
+		;;
+	    [Mm]*) # monitor
+		buffer="${buffer}%{S${monitor}} "
+		monitor=$((monitor+1))
 		;;
 	esac
     done
+    buffer="${buffer}%{Sf}"
 
     echo "${buffer}"
 }
 
 get_music() {
+    if [[ -z $(playerctl -l) ]]; then
+	return
+    fi
+
     title=$(playerctl metadata title)
     artist=$(playerctl metadata artist)
     status=$(playerctl status)
@@ -101,7 +115,7 @@ get_volume() {
 while read -r input; do
     case $input in
     W*)
-	wm_display=$(parse_wm_report "${input}")
+	wm_display=$(parse_wm_report "${input#?}")
 	;;
     M*)
 	music_display=$(get_music)
@@ -111,11 +125,16 @@ while read -r input; do
 	battery_display=$(get_battery)
 	wifi_display=$(get_wifi)
 	volume_display=$(get_volume)
-
-	if [[ -z $(playerctl -l) ]]; then
-	    music_display=""
-	fi
+	music_display=$(get_music)
 	;;
     esac
-    echo " ${wm_display}%{c}${music_display}%{r}${date_display}  ${wifi_display}  ${volume_display}  ${battery_display} "
+
+    buffer="${wm_display}"
+
+    monitor_count=$(xrandr | grep -o "^.* connected" | wc -l)
+    for (( i=0; i <$monitor_count; i++ )); do
+	buffer="${buffer}%{S$i}%{c}${music_display}%{r}${date_display}  ${wifi_display}  ${volume_display}  ${battery_display} "
+    done
+
+    echo "${buffer}"
 done
