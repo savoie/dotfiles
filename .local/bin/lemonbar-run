@@ -3,6 +3,8 @@
 source $HOME/.cache/wal/colors.sh
 
 PANEL_FIFO="/tmp/panel-fifo"
+PANEL_WM_NAME="lemonbar"
+
 if [ -e "$PANEL_FIFO" ]; then
     rm "$PANEL_FIFO"
 fi
@@ -10,15 +12,15 @@ mkfifo "$PANEL_FIFO"
 
 clock () {
     while true; do
-	echo "C"
-	sleep 1
+        echo "C"
+        sleep 1
     done
 }
 
 music () {
     dbus-monitor "type='signal',path='/org/mpris/MediaPlayer2',member='PropertiesChanged'" |
     while read -r line; do
-	echo "M"
+        echo "M"
     done
 }
 
@@ -42,6 +44,9 @@ ${HOME}/.local/bin/lemonbar-input < "$PANEL_FIFO" | lemonbar \
     -B "${color0}" \
     -F "${color7}" \
     -a 0 \
-    -b
+    -n "${PANEL_WM_NAME}" \
+    -b &
+
+xdo lower "$(xdo id -m -a ${PANEL_WM_NAME})"
 
 wait
