@@ -4,19 +4,22 @@
 
 # terminal emulator
 super + Return
-	urxvt -e /bin/zsh
+        urxvt -e /bin/zsh
+
+super + {_,shift} + apostrophe
+    ${HOME}/.local/bin/scratchpad -p {top, bottom}
 
 # program launcher
 super + {_, shift + } @space
-	rofi -show {run, window}
+        rofi -show {run, window}
 
 # make sxhkd reload its configuration files:
 super + Escape
-	pkill -USR1 -x sxhkd
+        pkill -USR1 -x sxhkd
 
 # refresh colour scheme
 super + shift + Escape
-	${HOME}/.local/bin/new-wal
+        ${HOME}/.local/bin/new-wal
 
 #
 # bspwm hotkeys
@@ -24,28 +27,28 @@ super + shift + Escape
 
 # quit bspwm normally
 super + alt + Escape
-	bspc quit
+        bspc quit
 
 # close and kill
 super + {_,shift + }w
-	bspc node -{c,k}
+        bspc node -{c,k}
 
 # alternate between the tiled and monocle layout
 super + m
-	bspc desktop -l next
+        bspc desktop -l next
 
 # if the current node is automatic, send it to the last manual, otherwise pull the last leaf
 # (send current node to presel if possible, or pull last node into current node)
 super + y
-	bspc query -N -n focused.automatic && bspc node -n last.!automatic || bspc node last.leaf -n focused
+        bspc query -N -n focused.automatic && bspc node -n last.!automatic || bspc node last.leaf -n focused
 
 # circulate desktop
 super + {comma, period}
-	bspc node @/ -C {backward, forward}
+        bspc node @/ -C {backward, forward}
 
 # rotate desktop
 super + ctrl + {comma, period}
-	bspc node @/ -R {-90, 90}
+        bspc node @/ -R {-90, 90}
 
 #
 # state/flags
@@ -53,7 +56,7 @@ super + ctrl + {comma, period}
 
 # set the window state
 super + {t,shift + t,s,f}
-	bspc node -t {tiled,pseudo_tiled,floating,fullscreen}
+        bspc node -t {tiled,pseudo_tiled,floating,fullscreen}
 
 #
 # focus/swap
@@ -61,33 +64,37 @@ super + {t,shift + t,s,f}
 
 # focus / send the node in the given direction
 super + {_,shift + }{h,j,k,l}
-	bspc node -{f,s} {west,south,north,east}
+        bspc node -{f,s} {west,south,north,east}
 
 # focus the node for the given path jump
 super + {p,b,comma,period}
-	bspc node -f @{parent,brother,first,second}
+        bspc node -f @{parent,brother,first,second}
 
 # focus the next/previous node in the current desktop
 super + {_,shift + }c
-	bspc node -f {next,prev}.local
+        bspc node -f {next,prev}.local
+
+# focus the next/previous monitor
+super + shift + bracket{left,right}
+        bspc monitor -f {prev,next}
 
 # focus the next/previous desktop in the current monitor
 super + bracket{left,right}
-	bspc desktop -f {prev,next}.local
+        bspc desktop -f {prev,next}.local
 
 # focus the last node/desktop
 super + {grave,Tab}
-	bspc {node,desktop} -f last
+        bspc {node,desktop} -f last
 
 # focus the older or newer node in the focus history
 super + {o,i}
-	bspc wm -h off; \
-	bspc node {older,newer} -f; \
-	bspc wm -h on
+        bspc wm -h off; \
+        bspc node {older,newer} -f; \
+        bspc wm -h on
 
 # focus or send to the given desktop
 super + {_,shift + }{1-9,0}
-	bspc {desktop -f,node -d} '^{1-9,10}'
+        bspc {desktop -f,node -d} '^{1-9,10}'
 
 #
 # preselect
@@ -95,19 +102,19 @@ super + {_,shift + }{1-9,0}
 
 # preselect the direction
 super + ctrl + {h,j,k,l}
-	bspc node -p {west,south,north,east}
+        bspc node -p {west,south,north,east}
 
 # preselect the ratio
 super + ctrl + {1-9}
-	bspc node -o 0.{1-9}
+        bspc node -o 0.{1-9}
 
 # cancel the preselection for the focused node
 super + ctrl + space
-	bspc node -p cancel
+        bspc node -p cancel
 
 # cancel the preselection for the focused desktop
 super + ctrl + shift + space
-	bspc query -N -d | xargs -I id -n 1 bspc node id -p cancel
+        bspc query -N -d | xargs -I id -n 1 bspc node id -p cancel
 
 #
 # move/resize
@@ -115,19 +122,19 @@ super + ctrl + shift + space
 
 # expand a window by moving one of its side outward
 super + alt + {h,j,k,l}
-	bspc node -z {left -20 0,bottom 0 20,top 0 -20,right 20 0}
+        bspc node -z {left -20 0,bottom 0 20,top 0 -20,right 20 0}
 
 # contract a window by moving one of its side inward
 super + alt + shift + {h,j,k,l}
-	bspc node -z {right -20 0,top 0 20,bottom 0 -20,left 20 0}
+        bspc node -z {right -20 0,top 0 20,bottom 0 -20,left 20 0}
 
 # move a floating window
 super + {Left,Down,Up,Right}
-	bspc node -v {-20 0,0 20,0 -20,20 0}
+        bspc node -v {-20 0,0 20,0 -20,20 0}
 
 # expand to fill empty space
 super + {minus,equal}
-	bspc config -d focused window_gap {35,0}
+        bspc config -d focused window_gap {35,0}
 
 #
 # system
@@ -135,48 +142,48 @@ super + {minus,equal}
 
 # lock screen
 ctrl + shift + l
-	sxlock -f "-misc-fantasque sans mono-medium-r-normal--0-100-0-0-M-0-*-*"
+        sxlock -f "-misc-fantasque sans mono-medium-r-normal--0-100-0-0-M-0-*-*"
 
 # raise volume
 XF86AudioRaiseVolume
-	amixer -D pulse set Master 2%+ unmute
+        amixer -D pulse set Master 2%+ unmute
 
 # lower volume
 XF86AudioLowerVolume
-	amixer -D pulse set Master 2%- unmute
+        amixer -D pulse set Master 2%- unmute
 
 # mute - FIXME (doesn't toggle LED)
 XF86AudioMute
-	amixer -D pulse set Master 1+ toggle
+        amixer -D pulse set Master 1+ toggle
 
 # increase brightness
 XF86MonBrightnessUp
-	xbacklight +10
+        xbacklight +10
 
 # decrease brightness
 XF86MonBrightnessDown
-	xbacklight -10
+        xbacklight -10
 
 # lock and sleep
 XF86PowerOff
-	systemctl suspend
+        systemctl suspend
 
 # power off
 super + XF86PowerOff
-	systemctl poweroff
+        systemctl poweroff
 
 # media play/pause
 XF86AudioPlay
-	playerctl play-pause
+        playerctl play-pause
 
 # media next
 XF86AudioNext
-	playerctl next
+        playerctl next
 
 # media prev
 XF86AudioPrev
-	playerctl previous
+        playerctl previous
 
 # media stop
 XF86AudioStop
-	playerctl stop
+        playerctl stop

@@ -1,0 +1,55 @@
+#!/bin/bash
+
+id=$(xdo id -N URxvt -n scratchpad)
+
+# start scratchpad if one isn't already running
+if [ -z "${id}" ]; then
+    urxvt -name scratchpad -e /bin/zsh &
+    while [ -z "${id}"]; do
+        id=$(xdo id -N URxvt -n scratchpad)
+    done
+fi
+
+# default to pull-down from top
+target_pos="top"
+case "$1" in
+    -p | --position)
+        if [ "$2" = "bottom" ]; then
+            target_pos="bottom"
+        fi
+        ;;
+esac
+
+# hide scratchpad only if it is focused and in target position
+curr_pos=$(xdotool getwindowgeometry --shell $(xdo id -N URxvt -n scratchpad) | \
+                awk -F "=" '$1 == "Y" { print $2 == "0" ? "top" : "bottom" }')
+if [ $curr_pos == $target_pos ] && [ -n "$(bspc query -N "${id}".focused.!hidden)" ]; then
+    hide=true
+else
+    hide=false
+fi
+
+# resize scratchpad
+screen_width=$(xdotool getdisplaygeometry --shell | \
+                   awk -F "=" '$1 == "WIDTH" { print $2 }')
+screen_height=$(xdotool getdisplaygeometry --shell | \
+                    awk -F "=" '$1 == "HEIGHT" { print $2 }')
+xdotool windowsize "${id}" $screen_width $(( screen_height / 3 ))
+
+# position scratchpad
+if [ $target_pos = "bottom" ]; then
+    win_height=$(xdotool getwindowgeometry --shell "${id}" | \
+                     awk -F "=" '$1 == "HEIGHT" { print $2 }' )
+    y=$(( screen_height - win_height ))
+else
+    y=0
+fi
+xdotool windowmove "${id}" 0 $y
+
+# toggle / focus scratchpad
+if [ $hide = true ]; then
+    bspc node "${id}".focused.!hidden --flag hidden
+else
+    bspc node "${id}".hidden --flag hidden
+    bspc node -f "${id}"
+fi
