@@ -50,6 +50,8 @@ fi
 
 unclutter --timeout 3 -b
 xsetroot -cursor_name left_ptr
+setxkbmap -option compose:ralt
+
 # set wal (no need for whole wal-set command on initial startup)
 wal -i ${HOME}/.local/share/img/ -o ${HOME}/.local/bin/wal-set
 
