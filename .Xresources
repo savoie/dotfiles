@@ -17,3 +17,4 @@ rofi*font: Fantasque Sans Mono 12
 rofi*separator-style: none
 rofi*hide-scrollbar: true
 rofi*lines: 3
+rofi*theme: ~/.cache/wal/colors-rofi-dark.rasi
