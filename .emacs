@@ -55,13 +55,7 @@
   (set-face-attribute 'company-tooltip-common nil
                       :foreground (face-attribute 'default :background))
   (set-face-attribute 'mode-line nil
-                      :background nil)
-  (set-face-attribute 'linum nil
-                      :background (face-attribute 'default :background)
-                      :foreground (face-attribute 'default :foreground))
-  (set-face-attribute 'linum-relative-current-face nil
-                      :background (face-attribute 'default :background)
-                      :foreground (face-attribute 'default :foreground)))
+                      :background nil))
 
 (setq-default letter-spacing 5)
 (setq-default line-spacing 2)
@@ -95,15 +89,6 @@
   (global-company-mode 1)
   (setq company-minimum-prefix-length 3)
   (global-set-key "\t" 'company-complete-common))
-
-(use-package linum-relative
-  :ensure t
-  :pin melpa-stable
-  :config (progn
-            (setq linum-relative-current-symbol "")
-            (set-face-bold 'linum-relative-current-face nil)
-            (global-linum-mode nil)
-            (linum-relative-on)))
 
 (use-package rainbow-mode
   :ensure t
@@ -229,15 +214,6 @@
       `((".*" . ,temporary-file-directory)))
 (setq auto-save-file-name-transforms
       `((".*" ,temporary-file-directory t)))
-(message "Deleting old backup files...")
-(let ((week (* 60 60 24 7))
-      (current (float-time (current-time))))
-  (dolist (file (directory-files temporary-file-directory t))
-    (when (and (backup-file-name-p file)
-               (> (- current (float-time (fifth (file-attributes file))))
-                  week))
-      (message "%s" file)
-      (delete-file file))))
 
 ;;; misc
 (add-hook 'before-save-hook 'whitespace-cleanup)
@@ -248,6 +224,8 @@
 (diminish 'undo-tree-mode)
 (setq-default indent-tabs-mode nil)
 (setq x-select-enable-clipboard t)
+(setq global-linum-mode t)
+(setq display-line-numbers 'relative)
 
 ;; set up new-frame hooks, see
 ;; https://www.emacswiki.org/emacs/SettingFrameColorsForEmacsClient
