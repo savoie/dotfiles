@@ -43,8 +43,8 @@ parse_wm_report() {
 }
 
 get_music() {
-    if [[ -z $(playerctl -l) ]]; then
-	return
+    if [[ -z $(playerctl -l) || $(playerctl metadata) == "{}" ]]; then
+        return
     fi
 
     title=$(playerctl metadata title)
@@ -57,83 +57,130 @@ get_music() {
 }
 
 get_date() {
-    date '+%b %-d %-I:%M'
+    date "+%b %-d %-I:%M"
 }
 
 get_battery() {
     BATC=/sys/class/power_supply/BAT1/capacity
     BATS=/sys/class/power_supply/BAT1/status
-    icons=("" "" "" "" "")
 
     status=$(sed -n p ${BATS})
     capacity=$(sed -n p ${BATC})
 
-    buffer="${capacity}%"
+    if [[ $status == "Charging"  ]]; then
+        icons=("" "" "" "" "")
+    else
+        icons=("" "" "" "" "")
+    fi
 
+    buffer=""
     # Display red if low battery and not charging
     if [[ $status != "Charging" && $capacity -lt 15 ]]; then
-	buffer="${buffer}%{F${red}}"
+        buffer="${buffer}%{F${red}}"
     # Display secondary colour if not charging
     elif [[ $status != "Charging" && $capacity -lt 100 ]]; then
-	buffer="${buffer}%{F${color2}}"
+        buffer="${buffer}%{F${color2}}"
     fi
 
     if [[ $capacity -lt 10 ]]; then
-	buffer="${buffer} ${icons[0]}"
+        buffer="${buffer} ${icons[0]}"
     elif [[ $capacity -lt 30 ]]; then
-	buffer="${buffer} ${icons[1]}"
+        buffer="${buffer} ${icons[1]}"
     elif [[ $capacity -lt 60 ]]; then
-	buffer="${buffer} ${icons[2]}"
+        buffer="${buffer} ${icons[2]}"
     elif [[ $capacity -lt 90 ]]; then
-	buffer="${buffer} ${icons[3]}"
+        buffer="${buffer} ${icons[3]}"
     else
-	buffer="${buffer} ${icons[4]}"
+        buffer="${buffer} ${icons[4]}"
     fi
-    buffer="${buffer}%{F-}"
+    buffer="${buffer} ${capacity}%%{F-}"
 
-    echo "${buffer}"
+    echo -e "${buffer}"
 }
 
 get_wifi() {
-    ssid=$(iw dev wlp2s0 link | grep SSID | sed 's/.*: //')
-    if [[ -z $ssid ]]; then
-	echo "%{F${color2}}×%{F-}"
+    iw=$(iw dev wlp2s0 link)
+    ssid=$(echo "${iw}" | sed -n '/SSID/s/.*: //p')
+    dbm=$(echo "${iw}" | sed -rn '/signal/s/.*: | dBm//pg')
+
+    if [[ $dbm -lt -100 ]]; then
+        quality=0
+    elif [[ $dbm -gt -50 ]]; then
+        quality=100
     else
-	echo " ${ssid}"
+        quality=$(( 2 * (dbm + 100) ))
+    fi
+
+    if [[ -z $ssid || $quality == 0 ]]; then
+        echo "%{F${color2}}%{F-}"
+    else
+        if [[ $quality -lt 25 ]]; then
+            buffer=""
+        elif [[ $quality -lt 50 ]]; then
+            buffer=""
+        elif [[ $quality -lt 75 ]]; then
+            buffer=""
+        else
+            buffer=""
+        fi
+        echo -e "${buffer} ${ssid}"
     fi
 }
 
 get_volume() {
-    sound_info=($(amixer -D pulse get Master | sed -n "s/.*\[\(.*\)%\].*\[\(.*\)\].*/\1 \2/p" | uniq))
-    if [[ "${sound_info[1]}" == "off" ]]; then
-       echo "%{F${color2}}×%{F-}"
+    sink_info=$(pacmd list-sinks | sed -n "/index/{x;/\*/p;z;x};H;\${x;/\*/p}")
+
+    # one of "internal", "speaker", "handset", "tv", "webcam", "microphone", "headset", "headphone", "hands-free", "car", "hifi", "computer", "portable"
+    # http://0pointer.de/lennart/projects/pulseaudio/doxygen/proplist_8h.html
+    type=$(echo "${sink_info}" | sed -rn "s/\s*device\.form_factor = \"(.*)\"/\1/pg")
+
+    # yes | no
+    muted=$(echo "${sink_info}" | sed -n "s/\s*muted: //p")
+
+    # front-right volume
+    volume=$(echo "${sink_info}" | sed -rn "/front-right/s/.*\/\s*([0-9]+)%.*/\1/p")
+
+    if [[ "${type}" == "headphone" || "${type}" == "headset" ]]; then
+        if [[ "${muted}" == "yes" ]]; then
+            buffer="%{F${color2}}"
+        else
+            buffer=""
+        fi
     else
-       echo " ${sound_info[0]}%"
+        if [[ "${muted}" == "yes" ]]; then
+            buffer="%{F${color2}}"
+        elif [[ volume -lt 50 ]]; then
+            buffer=""
+        else
+            buffer=""
+        fi
     fi
+
+    echo "${buffer} ${volume}%%{F-}"
 }
 
 while read -r input; do
     case $input in
     W*)
-	wm_display=$(parse_wm_report "${input#?}")
-	;;
+        wm_display=$(parse_wm_report "${input#?}")
+        ;;
     M*)
-	music_display=$(get_music)
-	;;
+        music_display=$(get_music)
+        ;;
     C*) # clock signal
-	date_display=$(get_date)
-	battery_display=$(get_battery)
-	wifi_display=$(get_wifi)
-	volume_display=$(get_volume)
-	music_display=$(get_music)
-	;;
+        date_display=$(get_date)
+        battery_display=$(get_battery)
+        wifi_display=$(get_wifi)
+        volume_display=$(get_volume)
+        music_display=$(get_music)
+        ;;
     esac
 
     buffer="${wm_display}"
 
     monitor_count=$(xrandr | grep -o "^.* connected" | wc -l)
     for (( i=0; i <$monitor_count; i++ )); do
-	buffer="${buffer}%{S$i}%{c}${music_display}%{r}${date_display}  ${wifi_display}  ${volume_display}  ${battery_display} "
+        buffer="${buffer}%{S$i}%{c}${music_display}%{r}${date_display}  ${wifi_display}  ${volume_display} ${battery_display} "
     done
 
     echo "${buffer}"

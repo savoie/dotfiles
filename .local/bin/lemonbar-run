@@ -18,7 +18,8 @@ clock () {
 }
 
 music () {
-    dbus-monitor "type='signal',path='/org/mpris/MediaPlayer2',member='PropertiesChanged'" |
+    #dbus-monitor "type='signal',path='/org/mpris/MediaPlayer2',member='PropertiesChanged'" |
+    pactl subscribe
     while read -r line; do
         echo "M"
     done
@@ -34,11 +35,11 @@ music > "$PANEL_FIFO" &
 clock > "$PANEL_FIFO" &
 
 ${HOME}/.local/bin/lemonbar-input < "$PANEL_FIFO" | lemonbar \
-    -g x15 \
+    -g x20 \
     -o 1 \
-    -f "FantasqueSansMono:size=9.5" \
+    -f "FantasqueSansMono:size=10" \
     -o 0 \
-    -f "fontawesome-webfont:size=9.5" \
+    -f "LineaCustom:size=9" \
     -o 1 \
     -f "FantasqueSansMono:size=9.5:style=italic" \
     -B "${color0}" \
