@@ -14,28 +14,28 @@ parse_wm_report() {
     desktop=1
     monitor=0
     for i in "${!report[@]}"; do
-	case "${report[$i]}" in
-	    [OF]*) # focused
-		buffer="${buffer}${desktop} "
-		desktop=$((desktop+1))
-		;;
-	    o*) # occupied
-		buffer="${buffer}%{F${color2}}${desktop}%{F-} "
-		desktop=$((desktop+1))
-		;;
-	    [Ff]*) # free
-		buffer="${buffer}%{F${color8}}${desktop}%{F-} "
-		desktop=$((desktop+1))
-		;;
-	    [Uu]*) # urgent
-		buffer="${buffer}%{F${red}}${desktop}%{F-} "
-		desktop=$((desktop+1))
-		;;
-	    [Mm]*) # monitor
-		buffer="${buffer}%{S${monitor}} "
-		monitor=$((monitor+1))
-		;;
-	esac
+        case "${report[$i]}" in
+            [OF]*) # focused
+                buffer="${buffer}${desktop} "
+                desktop=$((desktop+1))
+                ;;
+            o*) # occupied
+                buffer="${buffer}%{F${color3}}${desktop}%{F-} "
+                desktop=$((desktop+1))
+                ;;
+            [Ff]*) # free
+                buffer="${buffer}%{F${color8}}${desktop}%{F-} "
+                desktop=$((desktop+1))
+                ;;
+            [Uu]*) # urgent
+                buffer="${buffer}%{F${red}}${desktop}%{F-} "
+                desktop=$((desktop+1))
+                ;;
+            [Mm]*) # monitor
+                buffer="${buffer}%{S${monitor}} "
+                monitor=$((monitor+1))
+                ;;
+        esac
     done
     buffer="${buffer}%{Sf}"
 
@@ -67,19 +67,16 @@ get_battery() {
     status=$(sed -n p ${BATS})
     capacity=$(sed -n p ${BATC})
 
-    if [[ $status == "Charging"  ]]; then
+    if [[ $status != "Discharging"  ]]; then
         icons=("" "" "" "" "")
     else
         icons=("" "" "" "" "")
     fi
 
     buffer=""
-    # Display red if low battery and not charging
+    # Display secondary colour if low battery and not charging
     if [[ $status != "Charging" && $capacity -lt 15 ]]; then
-        buffer="${buffer}%{F${red}}"
-    # Display secondary colour if not charging
-    elif [[ $status != "Charging" && $capacity -lt 100 ]]; then
-        buffer="${buffer}%{F${color2}}"
+        buffer="${buffer}%{F${color3}}"
     fi
 
     if [[ $capacity -lt 10 ]]; then
@@ -112,7 +109,7 @@ get_wifi() {
     fi
 
     if [[ -z $ssid || $quality == 0 ]]; then
-        echo "%{F${color2}}%{F-}"
+        echo "%{F${color3}}%{F-}"
     else
         if [[ $quality -lt 25 ]]; then
             buffer=""
@@ -142,13 +139,13 @@ get_volume() {
 
     if [[ "${type}" == "headphone" || "${type}" == "headset" ]]; then
         if [[ "${muted}" == "yes" ]]; then
-            buffer="%{F${color2}}"
+            buffer="%{F${color3}}"
         else
             buffer=""
         fi
     else
         if [[ "${muted}" == "yes" ]]; then
-            buffer="%{F${color2}}"
+            buffer="%{F${color3}}"
         elif [[ volume -lt 50 ]]; then
             buffer=""
         else
@@ -180,8 +177,12 @@ while read -r input; do
 
     monitor_count=$(xrandr | grep -o "^.* connected" | wc -l)
     for (( i=0; i <$monitor_count; i++ )); do
-        buffer="${buffer}%{S$i}%{c}${music_display}%{r}${date_display}  ${wifi_display}  ${volume_display} ${battery_display} "
+        buffer="${buffer}%{S$i}%{c}${music_display}%{r}${date_display}  ${wifi_display}  ${volume_display} ${battery_display}"
     done
+
+    # pad left and right of each monitor's bar
+    padding="   "
+    buffer=$(echo "${buffer}" | sed -r "s/(^|%\{S.\})\s*|\s*$/\1${padding}/g")
 
     echo "${buffer}"
 done

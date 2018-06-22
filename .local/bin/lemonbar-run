@@ -1,6 +1,6 @@
 #!/bin/bash
 
-source $HOME/.cache/wal/colors.sh
+source ${HOME}/.cache/wal/colors.sh
 
 PANEL_FIFO="/tmp/panel-fifo"
 PANEL_WM_NAME="lemonbar"
@@ -18,7 +18,6 @@ clock () {
 }
 
 music () {
-    #dbus-monitor "type='signal',path='/org/mpris/MediaPlayer2',member='PropertiesChanged'" |
     pactl subscribe
     while read -r line; do
         echo "M"
@@ -34,19 +33,21 @@ music > "$PANEL_FIFO" &
 # trigger updates every second of things without event streams (date, battery)
 clock > "$PANEL_FIFO" &
 
+screen_width=$(xdotool getdisplaygeometry --shell | \
+                   awk -F "=" '$1 == "WIDTH" { print $2 }')
+
 ${HOME}/.local/bin/lemonbar-input < "$PANEL_FIFO" | lemonbar \
-    -g x20 \
+    -g $(( screen_width - 2 * 35))x40+35+35 \
     -o 1 \
     -f "FantasqueSansMono:size=10" \
     -o 0 \
     -f "LineaCustom:size=9" \
     -o 1 \
-    -f "FantasqueSansMono:size=9.5:style=italic" \
-    -B "${color0}" \
-    -F "${color7}" \
+    -f "FantasqueSansMono:size=10:style=italic" \
+    -B "${color7}" \
+    -F "${color0}" \
     -a 0 \
-    -n "${PANEL_WM_NAME}" \
-    -b &
+    -n "${PANEL_WM_NAME}" \ &
 
 xdo lower "$(xdo id -m -a ${PANEL_WM_NAME})"
 
