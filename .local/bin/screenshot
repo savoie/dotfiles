@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+
+screenshot_dir="${HOME}/screenshots"
+
+selector=""
+case "$1" in
+    -s | --screen)
+    selector="-window root"
+        ;;
+esac
+
+mkdir -p "${screenshot_dir}"
+import ${selector} "${screenshot_dir}/$(date +%Y-%M-%d-%H%m%S).png"

@@ -135,10 +135,6 @@ super + alt + shift + {h,j,k,l}
 super + {Left,Down,Up,Right}
         bspc node -v {-20 0,0 20,0 -20,20 0}
 
-# expand to fill empty space
-super + {minus,equal}
-        bspc config -d focused window_gap {35,0}
-
 #
 # system
 #
@@ -190,3 +186,7 @@ XF86AudioPrev
 # media stop
 XF86AudioStop
         playerctl stop
+
+# screenshot
+{_, super} + Print
+        ${HOME}/.local/bin/screenshot {--screen, _}
