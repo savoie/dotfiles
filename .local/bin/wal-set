@@ -41,32 +41,11 @@ set_emacs() {
     emacsclient --eval "(refresh-theme)"
 }
 
-reload_dunst() {
-    pkill dunst
-    dunst \
-        -lb "${color0}" \
-        -nb "${color0}" \
-        -cb "${color0}" \
-        -lf "${color7}" \
-        -bf "${color7}" \
-        -cf "${color7}" \
-        -nf "${color7}" \
-        -fn "Fantasque Sans Mono 10" \
-        -geometry "350x30-70+70" \
-        -markup "full" \
-        -hide_duplicates_count "true" \
-        -word_wrap "true" \
-        -separator_height "0" \
-        -padding "35" \
-        -horizontal_padding "35" &
-}
-
 set_bspwm() {
     bspc config presel_feedback_color "${color3}"
 }
 
 main() {
-    reload_dunst &
     set_emacs &
     set_bspwm &
     wait

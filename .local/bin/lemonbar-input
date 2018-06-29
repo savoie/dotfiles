@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 source $HOME/.cache/wal/colors.sh
 
@@ -43,7 +43,7 @@ parse_wm_report() {
 }
 
 get_music() {
-    if [[ -z $(playerctl -l) || $(playerctl metadata) == "{}" ]]; then
+    if [[ -z $(playerctl -l) || -z $(playerctl metadata title) ]]; then
         return
     fi
 
@@ -157,9 +157,13 @@ get_volume() {
 }
 
 while read -r input; do
-    case $input in
+    case "${input}" in
     W*)
         wm_display=$(parse_wm_report "${input#?}")
+        ;;
+    N*)
+        notification_display="${input#?}"
+        invert=0
         ;;
     M*)
         music_display=$(get_music)
@@ -170,6 +174,7 @@ while read -r input; do
         wifi_display=$(get_wifi)
         volume_display=$(get_volume)
         music_display=$(get_music)
+        invert=$((1-invert))
         ;;
     esac
 
@@ -177,12 +182,17 @@ while read -r input; do
 
     monitor_count=$(xrandr | grep -o "^.* connected" | wc -l)
     for (( i=0; i <$monitor_count; i++ )); do
-        buffer="${buffer}%{S$i}%{c}${music_display}%{r}${date_display}  ${wifi_display}  ${volume_display} ${battery_display}"
+        buffer="${buffer}%{S$i}%{c}${notification_display:-${music_display}}%{r}${date_display}  ${wifi_display}  ${volume_display} ${battery_display}"
     done
 
     # pad left and right of each monitor's bar
     padding="   "
     buffer=$(echo "${buffer}" | sed -r "s/(^|%\{S.\})\s*|\s*$/\1${padding}/g")
 
-    echo "${buffer}"
+    # flash if displaying a notification
+    if [[ -n "${notification_display}" ]] && ((invert)); then
+        echo "${buffer}%{F-}%{B-}%{R}"
+        buffer=$(echo "${buffer}" | sed -r "s/%\{F-\}|%\{B-\}/%\{R\}&%\{R\}/g")
+    fi
+    echo "${buffer}%{B-}%{F-}"
 done

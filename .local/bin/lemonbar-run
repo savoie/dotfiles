@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 source ${HOME}/.cache/wal/colors.sh
 
@@ -18,9 +18,26 @@ clock () {
 }
 
 music () {
-    pactl subscribe
+    pactl subscribe |
     while read -r line; do
         echo "M"
+    done
+}
+
+notifications () {
+    pkill sind
+    sind --status="N%c" --format="%a:%s" -S |
+    while read -r line; do
+        case "${line}" in
+            N*)
+                if [[ "${line#?}" == 0 ]]; then
+                    line=""
+                else
+                    read -r line
+                fi
+                echo "N${line}"
+                ;;
+        esac
     done
 }
 
@@ -29,6 +46,9 @@ bspc subscribe report > "$PANEL_FIFO" &
 
 # subscribe to music event stream
 music > "$PANEL_FIFO" &
+
+# subscribe to libnotify events
+notifications > "$PANEL_FIFO" &
 
 # trigger updates every second of things without event streams (date, battery)
 clock > "$PANEL_FIFO" &
