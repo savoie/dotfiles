@@ -26,6 +26,11 @@
    :stable nil))
 (require 'quelpa-use-package)
 
+(setq use-package-always-ensure t)
+
+(defun load-init-file (file-name)
+  (load-file (concat user-emacs-directory file-name)))
+
 ;;; appearance
 (setq inhibit-startup-screen t)
 (setq default-frame-alist
@@ -34,11 +39,15 @@
         (vertical-scroll-bars . nil)
         (horizontal-scroll-bars . nil)
         (internal-border-width . 35)))
+(setq-default line-spacing 2)
 (menu-bar-mode -1)
 (tool-bar-mode -1)
 
+(use-package rich-minority
+  :config (if (not rich-minority-mode)
+            (rich-minority-mode 1)))
+
 (use-package base16-theme
-  :ensure t
   :pin melpa-stable
   :init (add-to-list 'custom-theme-load-path "~/.cache/wal/"))
 
@@ -57,23 +66,16 @@
   (set-face-attribute 'mode-line nil
                       :background nil))
 
-(setq-default letter-spacing 5)
-(setq-default line-spacing 2)
-
 ;;; tools
 
 (setq ido-enable-flex-matching t)
 (setq ido-everywhere t)
 (ido-mode 1)
 
-(use-package smex
-  :ensure t)
+(use-package smex)
 
 (use-package ivy
-  :ensure t
   :pin elpa
-  :diminish ivy-mode
-  :diminish counsel-mode
   :config
   (ivy-mode t)
   (setq ivy-use-virtual-buffers t)
@@ -82,73 +84,41 @@
   (setq ivy-re-builders-alist '((t . ivy--regex-ignore-order))))
 
 (use-package company
-  :ensure t
-  :diminish company-mode
   :config
-  (use-package company-quickhelp :ensure t)
+  (use-package company-quickhelp)
   (global-company-mode 1)
-  (setq company-minimum-prefix-length 3)
-  (global-set-key "\t" 'company-complete-common))
+  (setq company-minimum-prefix-length 3))
 
 (use-package rainbow-mode
-  :ensure t
-  :diminish rainbow-mode
   :config (rainbow-mode))
 
 (use-package slime
-  :ensure t
+  :disabled
   :config (progn
             (setq inferior-lisp-program "/usr/local/opt/sbcl/bin/sbcl")
             (setq slime-contribs '(slime-fancy))))
 
-(require 'org)
-(require 'ox-beamer)
-(setq org-log-done t)
-(setq org-agenda-files '("~/org"))
-(setq org-agenda-window-setup 'current-window)
-(setq org-default-notes-file (concat org-directory "/notes.org"))
-(setq org-todo-keywords
-      '((sequence "TODO" "BLOCK" "|" "DONE" "DELEG")))
-(setq org-global-properties
-      '(("Effort_ALL" .
-         "0:05 0:15 0:30 0:45 1:00 2:00 6:00 10:00")))
-(setq org-agenda-custom-commands
-      '(("x" "Testing"
-         ((org-agenda-list)
-          (org-agenda-filter-apply org-agenda-tag-filter 'yesterday)))
-        ("p" "Prioritized tasks"
-         ((tags-todo "yesterday")
-          (tags-todo "today")
-          (tags-todo "soon")
-          (tags-todo "later")
-          (tags-todo "5min&yesterday")
-          (tags-todo "5min&today")
-          (tags-todo "30min&yesterday")
-          (tags-todo "30min&today")
-          (tags-todo "hours&yesterday")
-          (tags-todo "hours&today")
-          (tags-todo "days&yesterday")
-          (tags-todo "days&today")
-          (tags-todo "5min&soon")
-          (tags-todo "5min&later")
-          (tags-todo "30min&soon")
-          (tags-todo "hours&soon")
-          (tags-todo "days&soon")
-          (tags-todo "30min&later")
-          (tags-todo "hours&later")
-          (tags-todo "days&later"))
-         ((org-agenda-sorting-strategy '(todo-state-up deadline-up))
-          (org-agenda-overriding-columns-format "%DEADLINE %50ITEM %TODO %CLOCKSUM %EFFORT")
-          (org-agenda-view-columns-initially t)))))
+(load-init-file "org-init.el")
 
-(setq org-agenda-default-appointment-duration 15)
-(setq org-icalendar-combined-agenda-file "~/org/agenda.ics")
-(setq org-icalendar-include-todo '(all))
-(setq org-icalendar-use-scheduled '(event-if-todo event-if-not-todo))
-(setq org-icalendar-use-deadline '(event-if-todo event-if-not-todo))
+;; python-mode
+(use-package conda
+  :init (setq conda-anaconda-home (expand-file-name "~/.conda"))
+  :config
+  (conda-env-initialize-interactive-shells)
+  (conda-env-autoactivate-mode t))
+
+(use-package elpy
+  :config
+  (elpy-enable)
+  (use-package company-jedi)
+  (defun my/python-mode-hook ()
+    (add-to-list 'company-backends 'company-jedi)
+    (hs-minor-mode 1))
+  (add-hook 'python-mode-hook 'my/python-mode-hook)
+  (setq elpy-rpc-backend "jedi")
+  (add-to-list 'rm-whitelist " Elpy"))
 
 (use-package evil
-  :ensure t
   :config (progn
             ;; Esc anything
             (define-key evil-normal-state-map [escape] 'keyboard-quit)
@@ -171,7 +141,6 @@
 
             ;; Keysmash escape
             (use-package key-chord
-              :ensure t
               :pin melpa-stable
               :config (progn
                         (key-chord-define evil-insert-state-map "jk" 'evil-normal-state)
@@ -179,7 +148,6 @@
                         (key-chord-mode 1)))
 
             (use-package evil-surround
-              :ensure t
               :pin melpa-stable
               :config (global-evil-surround-mode 1))
 
@@ -198,7 +166,6 @@
 
   :init (progn
           (use-package evil-leader
-            :ensure t
             :pin melpa-stable
             :config (progn
                       (evil-leader/set-leader "<SPC>")
@@ -208,6 +175,9 @@
                       (global-evil-leader-mode)))
 
           (evil-mode 1)))
+
+(use-package exec-path-from-shell
+  :config (exec-path-from-shell-copy-env "PATH"))
 
 ;;; backup files (https://www.emacswiki.org/emacs/BackupDirectory#toc2)
 (setq backup-directory-alist
@@ -221,11 +191,10 @@
 (setq mode-line-in-non-selected-windows nil)
 (setq minibuffer-message-timeout 0)
 (refresh-theme)
-(diminish 'undo-tree-mode)
 (setq-default indent-tabs-mode nil)
 (setq x-select-enable-clipboard t)
-(setq global-linum-mode t)
 (setq display-line-numbers 'relative)
+(setq global-display-line-numbers-mode 1)
 
 ;; set up new-frame hooks, see
 ;; https://www.emacswiki.org/emacs/SettingFrameColorsForEmacsClient
