@@ -26,7 +26,7 @@ music () {
 
 notifications () {
     pkill sind
-    sind --status="N%c" --format="%a:%s" -S |
+    sind --status="N%c" --format="%s" -S |
     while read -r line; do
         case "${line}" in
             N*)

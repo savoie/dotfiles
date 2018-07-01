@@ -43,17 +43,16 @@ parse_wm_report() {
 }
 
 get_music() {
-    if [[ -z $(playerctl -l) || -z $(playerctl metadata title) ]]; then
-        return
-    fi
-
     title=$(playerctl metadata title)
     artist=$(playerctl metadata artist)
     status=$(playerctl status)
 
-    buffer="${title} - ${artist} %{T3}(${status,,}%{T-})"
+    buffer="${title} — ${artist} %{T3}(${status,,}%{T-})"
 
-    echo "${buffer}"
+    if [[ -n "${title}" ]]; then
+        echo "${buffer}"
+    fi
+
 }
 
 get_date() {
