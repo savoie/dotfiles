@@ -14,7 +14,8 @@ bspc config borderless_monocle   true
 bspc config gapless_monocle      false
 bspc config paddingless_monocle  false
 
-bspc rule -a Emacs state=tiled follow=on locked=on
+bspc rule -a Emacs locked=on
 bspc rule -a URxvt:scratchpad sticky=on state=floating hidden=on locked=on
 
+wal -i ${HOME}/.local/share/img/ -o ${HOME}/.local/bin/wal-set
 ${HOME}/.local/bin/lemonbar-run &

@@ -8,15 +8,7 @@ sysmodmap=/etc/X11/xinit/.Xmodmap
 # merge in defaults and keymaps
 
 if [ -f $sysresources ]; then
-
-
-
-
-
-
-
     xrdb -merge $sysresources
-
 fi
 
 if [ -f $sysmodmap ]; then
@@ -24,15 +16,7 @@ if [ -f $sysmodmap ]; then
 fi
 
 if [ -f "$userresources" ]; then
-
-
-
-
-
-
-
     xrdb -merge "$userresources"
-
 fi
 
 if [ -f "$usermodmap" ]; then
@@ -51,9 +35,6 @@ fi
 unclutter --timeout 3 -b
 xsetroot -cursor_name left_ptr
 setxkbmap -option compose:ralt
-
-# set wal (no need for whole wal-set command on initial startup)
-wal -i ${HOME}/.local/share/img/ -o ${HOME}/.local/bin/wal-set
 
 sxlock -f "-misc-fantasque sans mono-medium-r-normal--0-100-0-0-M-0-*-*"
 
