@@ -18,7 +18,7 @@ clock () {
 }
 
 music () {
-    pactl subscribe |
+    dbus-monitor "type='signal', path='/org/mpris/MediaPlayer2', member='PropertiesChanged'" |
     while read -r line; do
         echo "M"
     done
