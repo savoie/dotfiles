@@ -172,8 +172,9 @@
             :config (progn
                       (evil-leader/set-leader "<SPC>")
                       (evil-leader/set-key
-                        "a" 'org-agenda
-                        "c" 'org-capture)
+                        "a" 'org-agenda-list
+                        "t" 'org-todo-list
+                        "c" 'counsel-org-capture)
                       (global-evil-leader-mode)))
 
           (evil-mode 1)))
@@ -197,6 +198,7 @@
 (setq x-select-enable-clipboard t)
 (setq display-line-numbers 'relative)
 (setq global-display-line-numbers-mode 1)
+(setq help-window-select t)
 
 ;; set up new-frame hooks, see
 ;; https://www.emacswiki.org/emacs/SettingFrameColorsForEmacsClient
