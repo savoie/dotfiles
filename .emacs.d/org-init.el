@@ -23,6 +23,7 @@
 (defun my-org-agenda-mode-hook ()
     (local-set-key (kbd "q") 'org-agenda-exit))
 (add-hook 'org-agenda-mode-hook 'my-org-agenda-mode-hook)
+(setq org-columns-default-format "%50ITEM %5CLOCKSUM %6EFFORT %DEADLINE")
 
 (use-package org-super-agenda
   :config

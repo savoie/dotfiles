@@ -66,7 +66,9 @@
   (set-face-attribute 'company-tooltip-common nil
                       :foreground (face-attribute 'default :background))
   (set-face-attribute 'mode-line nil
-                      :background nil))
+                      :background nil)
+  (set-face-attribute 'org-column nil
+                      :background (face-attribute 'default :background)))
 
 ;;; tools
 
