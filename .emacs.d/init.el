@@ -43,6 +43,8 @@
 (menu-bar-mode -1)
 (tool-bar-mode -1)
 
+(use-package noflet)
+
 (use-package rich-minority
   :config (if (not rich-minority-mode)
             (rich-minority-mode 1)))
@@ -204,3 +206,8 @@
   (refresh-theme))
 (ad-activate 'server-create-window-system-frame)
 (add-hook 'after-make-frame-functions (lambda (&rest frame) (refresh-theme)))
+
+;; don't close window on buffer delete
+(defun suppress-window-delete (orig-fun &rest args)
+    (noflet ((delete-window nil)) (apply orig-fun args)))
+(advice-add 'evil-delete-buffer :around #'suppress-window-delete)
