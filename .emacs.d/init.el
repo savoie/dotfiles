@@ -43,6 +43,9 @@
 (menu-bar-mode -1)
 (tool-bar-mode -1)
 
+(setq display-line-numbers-type 'visual)
+(global-display-line-numbers-mode)
+
 (use-package noflet)
 
 (use-package rich-minority
@@ -67,6 +70,12 @@
                       :foreground (face-attribute 'default :background))
   (set-face-attribute 'mode-line nil
                       :background nil)
+  (set-face-attribute 'line-number nil
+                      :foreground (plist-get base16-wal-colors :base02)
+                      :background (face-attribute 'default :background))
+  (set-face-attribute 'line-number-current-line nil
+                      :foreground (plist-get base16-wal-colors :base03)
+                      :background (face-attribute 'default :background))
   (set-face-attribute 'org-column nil
                       :background (face-attribute 'default :background)))
 
@@ -97,9 +106,8 @@
   :config (rainbow-mode))
 
 (use-package slime
-  :disabled
   :config (progn
-            (setq inferior-lisp-program "/usr/local/opt/sbcl/bin/sbcl")
+            (setq inferior-lisp-program "/usr/bin/sbcl")
             (setq slime-contribs '(slime-fancy))))
 
 (load-init-file "org-init.el")
@@ -117,7 +125,8 @@
   (use-package company-jedi)
   (defun my/python-mode-hook ()
     (add-to-list 'company-backends 'company-jedi)
-    (hs-minor-mode 1))
+    (hs-minor-mode 1)
+    (flymake-mode 1))
   (add-hook 'python-mode-hook 'my/python-mode-hook)
   (setq elpy-rpc-backend "jedi")
   (add-to-list 'rm-whitelist " Elpy"))
@@ -198,8 +207,6 @@
 (refresh-theme)
 (setq-default indent-tabs-mode nil)
 (setq x-select-enable-clipboard t)
-(setq display-line-numbers 'relative)
-(setq global-display-line-numbers-mode 1)
 (setq help-window-select t)
 
 ;; set up new-frame hooks, see

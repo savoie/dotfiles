@@ -16,7 +16,7 @@
         ("n" "Note" entry (file "~/org/notes.org")
          "* %?\n  %i" :kill-buffer t)))
 (setq org-enforce-todo-dependencies t)
-(setq org-agenda-dim-blocked-tasks t)
+(setq org-agenda-dim-blocked-tasks 'invisible)
 
 
 ; close previously-unopened buffers on agenda quit
