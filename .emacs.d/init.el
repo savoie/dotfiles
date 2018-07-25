@@ -222,3 +222,7 @@
 (defun suppress-window-delete (orig-fun &rest args)
     (noflet ((delete-window nil)) (apply orig-fun args)))
 (advice-add 'evil-delete-buffer :around #'suppress-window-delete)
+
+;; notify statusbar to refresh emacs-related elements
+(defun notify-panel (&rest args)
+  (call-process-shell-command "echo \"E\" > \"$PANEL_FIFO\"&"))

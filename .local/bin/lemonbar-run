@@ -2,7 +2,6 @@
 
 source ${HOME}/.cache/wal/colors.sh
 
-PANEL_FIFO="/tmp/panel-fifo"
 PANEL_WM_NAME="lemonbar"
 
 if [ -e "$PANEL_FIFO" ]; then
@@ -40,6 +39,9 @@ notifications () {
         esac
     done
 }
+
+# always check emacs data on statusbar launch
+echo "E" > "$PANEL_FIFO" &
 
 # subscribe to event stream for window manager
 bspc subscribe report > "$PANEL_FIFO" &

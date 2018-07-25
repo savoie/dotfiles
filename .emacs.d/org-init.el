@@ -19,11 +19,14 @@
 (setq org-agenda-dim-blocked-tasks 'invisible)
 
 
-; close previously-unopened buffers on agenda quit
+;; close previously-unopened buffers on agenda quit
 (defun my-org-agenda-mode-hook ()
     (local-set-key (kbd "q") 'org-agenda-exit))
 (add-hook 'org-agenda-mode-hook 'my-org-agenda-mode-hook)
 (setq org-columns-default-format "%50ITEM %5CLOCKSUM %6EFFORT %DEADLINE")
+
+;; notify statusbar on clock change
+(advice-add 'org-clock-update-mode-line :after #'notify-panel)
 
 (use-package org-super-agenda
   :config

@@ -90,4 +90,5 @@ bindkey "kj" vi-cmd-mode
   done
 }
 
+source ${HOME}/.profile
 source ${HOME}/.aliases

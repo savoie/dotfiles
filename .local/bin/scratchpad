@@ -5,7 +5,7 @@ id=$(xdo id -N URxvt -n scratchpad)
 # start scratchpad if one isn't already running
 if [ -z "${id}" ]; then
     urxvt -name scratchpad -e /bin/zsh &
-    while [ -z "${id}"]; do
+    while [ -z "${id}" ]; do
         id=$(xdo id -N URxvt -n scratchpad)
     done
 fi
