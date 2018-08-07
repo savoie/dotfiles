@@ -25,8 +25,17 @@
 (add-hook 'org-agenda-mode-hook 'my-org-agenda-mode-hook)
 (setq org-columns-default-format "%50ITEM %5CLOCKSUM %6EFFORT %DEADLINE")
 
+;; close previously-unopened buffers after checking for dangling clocks
+(defun org-find-open-clocks-close-new-buffers (orig-fun file)
+  (let ((new-buf (if (get-file-buffer file) nil
+                   (find-file-noselect file))))
+    (funcall orig-fun file)
+    (if new-buf (org-release-buffers (list new-buf)))))
+(advice-add 'org-find-open-clocks :around #'org-find-open-clocks-close-new-buffers)
+
 ;; notify statusbar on clock change
 (advice-add 'org-clock-update-mode-line :after #'notify-panel)
+(advice-add 'org-clock-out :after #'notify-panel)
 
 (use-package org-super-agenda
   :config
