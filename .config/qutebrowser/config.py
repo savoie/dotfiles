@@ -11,7 +11,8 @@ with open(os.path.expanduser('~/.cache/wal/colors.yml'), 'r') as yml_file:
     colors = yaml.load(yml_file)
 
 c.aliases = {**{
-    'q': 'quit',
+    'q': 'close',
+    'qa': 'quit',
     'w': 'session-save',
     'wq': 'quit --save',
     'x': 'quit --save',
@@ -20,6 +21,9 @@ c.aliases = {**{
     'bn': 'tab-next',
     'bd': 'tab-close'
 }, **{'b'+str(i): 'buffer '+str(i) for i in range(1, 10)}}
+config.bind('^', 'scroll-to-perc --horizontal 0')
+config.bind('0', 'scroll-to-perc --horizontal 0')
+config.bind('$', 'scroll-to-perc --horizontal 100')
 
 c.fonts.monospace = 'Fantasque Sans Mono'
 
@@ -47,6 +51,7 @@ c.tabs.indicator.width = 0
 c.tabs.favicons.show = 'pinned'
 c.tabs.title.alignment = 'center'
 c.tabs.padding = {'top': 5, 'bottom': 5, 'left': 5, 'right': 5}
+config.bind('<Alt+t>', 'set tabs.show always;; later 750 set tabs.show switching')
 
 # colours
 color_mapping = {
