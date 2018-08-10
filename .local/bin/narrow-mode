@@ -1,0 +1,47 @@
+#!/usr/bin/env bash
+
+RESTORE_PREV_STATE="/tmp/narrow-mode"
+if [ -e "${RESTORE_PREV_STATE}" ]; then
+    source "${RESTORE_PREV_STATE}"
+    rm -f "${RESTORE_PREV_STATE}"
+    exit 0
+fi
+
+state_dump=$(bspc query -T -n focused)
+id=$(echo "${state_dump}" | jq ".id")
+state=$(echo "${state_dump}" | jq --raw-output ".client.state")
+
+# generate dimming overlay
+BG_FILL="/tmp/narrow-mode-fill.png"
+screen_width=$(xdotool getdisplaygeometry --shell | awk -F "=" '$1 == "WIDTH" { print $2 }')
+screen_height=$(xdotool getdisplaygeometry --shell | awk -F "=" '$1 == "HEIGHT" { print $2 }')
+source ${HOME}/.cache/wal/colors.sh
+convert -size "${screen_width}x${screen_height}" "xc:${background}" "${BG_FILL}"
+
+# bring to front
+layer=$(echo "${state_dump}" | jq --raw-output ".client.layer")
+echo "bspc node ${id} --layer ${layer}" >> "${RESTORE_PREV_STATE}"
+bspc node "${id}" --layer above
+
+# dim everything else
+bspc rule -a feh -o state=floating focus=off
+feh "${BG_FILL}" &
+feh_pid=($!)
+feh_id=$(xdo id -m -p "${feh_pid}")
+xdotool windowsize "${feh_id}" 100% 100%
+echo "xdo close ${feh_id}" >> "${RESTORE_PREV_STATE}"
+
+# float centred with full height and half width
+bspc node "${id}" -t floating
+xdotool windowsize "${id}" 50% 100%
+xdotool windowmove "${id}" $(( $screen_width / 4 )) 0
+echo "bspc node ${id} -t ${state}" >> "${RESTORE_PREV_STATE}"
+if [[ "${state}" == "floating" ]]; then
+    width=$(echo "${state_dump}" | jq ".client.floatingRectangle.width")
+    height=$(echo "${state_dump}" | jq ".client.floatingRectangle.height")
+    x=$(echo "${state_dump}" | jq ".client.floatingRectangle.x")
+    y=$(echo "${state_dump}" | jq ".client.floatingRectangle.y")
+
+    echo "xdotool windowsize ${id} ${width} ${height}" >> "${RESTORE_PREV_STATE}"
+    echo "xdotool windowmove ${id} ${x} ${y}" >> "${RESTORE_PREV_STATE}"
+fi
