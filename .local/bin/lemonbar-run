@@ -40,9 +40,6 @@ notifications () {
     done
 }
 
-# always check emacs data on statusbar launch
-echo "E" > "$PANEL_FIFO" &
-
 # subscribe to event stream for window manager
 bspc subscribe report > "$PANEL_FIFO" &
 

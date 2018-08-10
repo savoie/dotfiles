@@ -41,7 +41,7 @@ sxlock -f "-misc-fantasque sans mono-medium-r-normal--0-100-0-0-M-0-*-*"
 set SXHKD_SHELL="/bin/sh"
 sxhkd &
 
-compton --config ${HOME}/.config/compton/compton.conf --xrender-sync --xrender-sync-fence -b
+compton --config ${HOME}/.config/compton/compton.conf --xrender-sync --xrender-sync-fence --use-ewmh-active-win -b
 .local/bin/notifications &
 /usr/bin/dropbox &
 
