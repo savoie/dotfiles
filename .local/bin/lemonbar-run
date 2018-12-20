@@ -16,10 +16,26 @@ clock () {
     done
 }
 
+# watch_diff [command] [output]
+# runs [command] every second and echos [output] if stdout/stderr has changed
+watch_diff () {
+    old=""
+    while true; do
+        new=$(2>&1 sh -c "$1")
+        if [[ "${old}" != "${new}" ]]; then
+            echo "$2"
+            old="${new}"
+        fi
+        sleep 1
+    done
+}
+
 music () {
-    dbus-monitor "type='signal', path='/org/mpris/MediaPlayer2', member='PropertiesChanged'" |
+    dbus-monitor --profile "type='signal', path='/org/mpris/MediaPlayer2', member='PropertiesChanged'" |
     while read -r line; do
-        echo "M"
+        if [[ $line == *"PropertiesChanged"* ]]; then
+            echo "M"
+        fi
     done
 }
 
@@ -45,6 +61,7 @@ bspc subscribe report > "$PANEL_FIFO" &
 
 # subscribe to music event stream
 music > "$PANEL_FIFO" &
+watch_diff "playerctl -l" "M" > "$PANEL_FIFO" &
 
 # subscribe to libnotify events
 notifications > "$PANEL_FIFO" &

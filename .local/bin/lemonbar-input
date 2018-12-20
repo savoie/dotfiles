@@ -52,7 +52,6 @@ get_music() {
     if [[ -n "${title}" ]]; then
         echo "${buffer}"
     fi
-
 }
 
 get_date() {
