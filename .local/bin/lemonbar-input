@@ -3,6 +3,7 @@
 source $HOME/.cache/wal/colors.sh
 
 red="#993333"
+inverted=0
 
 parse_wm_report() {
     buffer=""
@@ -172,7 +173,6 @@ while read -r input; do
         ;;
     N*)
         notification_display="${input#?}"
-        invert=0
         ;;
     M*)
         music_display=$(get_music)
@@ -185,7 +185,6 @@ while read -r input; do
         battery_display=$(get_battery)
         wifi_display=$(get_wifi)
         volume_display=$(get_volume)
-        invert=$((1-invert))
         ;;
     esac
 
@@ -207,10 +206,30 @@ while read -r input; do
     # pad left and right of each monitor's bar
     buffer=$(echo "${buffer}" | sed -r "s/(^|%\{S.\})\s*|\s*$/\1${padding}/g")
 
-    # flash if displaying a notification
-    if [[ -n "${notification_display}" ]] && ((invert)); then
-        echo "${buffer}%{F-}%{B-}%{R}"
-        buffer=$(echo "${buffer}" | sed -r "s/%\{F-\}|%\{B-\}/%\{R\}&%\{R\}/g")
+    # flush colours for the transition from notification
+    # to no notification
+    if [[ -n "${notification_display}" ]]; then
+        if ! ((inverted)); then
+            echo "${buffer}%{F-}%{B-}%{R}"
+            inverted=1
+        fi
+    else
+        if ((inverted)); then
+            echo "${buffer}%{B-}%{F-}"
+            echo "${buffer}%{B-}%{F-}"
+            inverted=0
+        fi
     fi
-    echo "${buffer}%{B-}%{F-}"
+
+    # output final buffer
+    if ((inverted)); then
+        buffer=$(echo "${buffer}" | \
+                     sed -r "s/%\{F-\}/%\{R\}%\{<remove>B-\}%\{R\}/g" | \
+                     sed -r "s/%\{B-\}/%\{R\}%\{<remove>F-\}%\{R\}/g" | \
+                     sed -r "s/<remove>//g")
+        echo "${buffer}"
+    else
+        echo "${buffer}%{B-}%{F-}"
+    fi
+
 done
