@@ -113,12 +113,6 @@
 (load-init-file "org-init.el")
 
 ;; python-mode
-(use-package conda
-  :init (setq conda-anaconda-home (expand-file-name "~/.conda"))
-  :config
-  (conda-env-initialize-interactive-shells)
-  (conda-env-autoactivate-mode t))
-
 (use-package elpy
   :config
   (elpy-enable)
