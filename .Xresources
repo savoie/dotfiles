@@ -2,9 +2,7 @@ URxvt*scrollBar: false
 URxvt*transparency: false
 URxvt*externalBorder: 0px
 URxvt*internalBorder: 35px
-URxvt*font: xft:Fantasque Sans Mono-12
-URxvt*letterSpace: -1
-URxvt*lineSpace: 2
+URxvt*font: xft:Fantasque Sans Mono Nerd Font-12
 
 ! Enables copy/paste with Ctrl-Shift-C/V
 URxvt.iso14755: false
