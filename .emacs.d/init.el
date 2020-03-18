@@ -85,6 +85,9 @@
 (setq ido-everywhere t)
 (ido-mode 1)
 
+(setq smerge-command-prefix (kbd "C-c v"))
+(setq ediff-window-setup-function #'ediff-setup-windows-plain)
+
 (use-package smex)
 
 (use-package ivy
@@ -110,9 +113,15 @@
             (setq inferior-lisp-program "/usr/bin/sbcl")
             (setq slime-contribs '(slime-fancy))))
 
+(use-package sml-mode
+  :config (setq sml-program-name "~/sml/bin/sml"))
+
+(use-package haskell-mode)
+
 (load-init-file "org-init.el")
 
 ;; python-mode
+(use-package flymake)
 (use-package elpy
   :config
   (elpy-enable)
@@ -124,6 +133,34 @@
   (add-hook 'python-mode-hook 'my/python-mode-hook)
   (setq elpy-rpc-backend "jedi")
   (add-to-list 'rm-whitelist " Elpy"))
+
+;; c++-mode
+(load-init-file "google-c-style.el")
+(add-hook 'c++-mode-common-hook 'google-set-c-style)
+
+(use-package php-mode
+  :ensure)
+
+;; tabs
+;; https://dougie.io/emacs/indentation/
+(setq-default default-tab-width 2)
+(setq-default tab-width 2)
+
+(defun disable-tabs ()
+  (interactive)
+  (setq indent-tabs-mode nil)
+  (setq evil-indent-tabs-mode nil))
+
+(defun enable-tabs  ()
+  (interactive)
+  (setq indent-tabs-mode t)
+  (setq evil-indent-tabs-mode t))
+
+(setq-default evil-indent-convert-tabs t)
+(setq-default evil-shift-width tab-width)
+
+;;; disable tabs in all modes by default
+(add-hook 'prog-mode-hook 'disable-tabs)
 
 (use-package evil
   :config (progn
