@@ -70,15 +70,17 @@ screen_width=$(xdotool getdisplaygeometry --shell | \
                    awk -F "=" '$1 == "WIDTH" { print $2 }')
 
 ${HOME}/.local/bin/lemonbar-input < "$PANEL_FIFO" | lemonbar \
-    -g $(( screen_width - 2 * 35))x40+35+35 \
-    -o 1 \
-    -f "FantasqueSansMono:size=10" \
-    -o 0 \
+    -g $(( screen_width - 2 * 10))x15+10+10 \
+    -o -4 \
     -f "LineaCustom:size=9" \
-    -o 1 \
-    -f "FantasqueSansMono:size=10:style=italic" \
-    -B "${color7}" \
-    -F "${color0}" \
+    -o -2 \
+    -f "Overpass:size=10" \
+    -o -2 \
+    -f "Overpass:size=10:style=italic" \
+    -B "#00000000" \
+    -o 2 \
+    -f "Overpass:size=16:style=heavy" \
+    -F "${color7}" \
     -a 0 \
     -n "${PANEL_WM_NAME}" \ &
 

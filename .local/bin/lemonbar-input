@@ -6,7 +6,7 @@ red="#993333"
 inverted=0
 
 parse_wm_report() {
-    buffer=""
+    buffer="%{T4}"
 
     IFS=":"
     report=($1)
@@ -17,19 +17,19 @@ parse_wm_report() {
     for i in "${!report[@]}"; do
         case "${report[$i]}" in
             [OF]*) # focused
-                buffer="${buffer}${desktop} "
+                buffer="${buffer}·%{O10}"
                 desktop=$((desktop+1))
                 ;;
             o*) # occupied
-                buffer="${buffer}%{F${color3}}${desktop}%{F-} "
+                buffer="${buffer}%{F${color3}}·%{F-}%{O10}"
                 desktop=$((desktop+1))
                 ;;
             [Ff]*) # free
-                buffer="${buffer}%{F${color8}}${desktop}%{F-} "
+                buffer="${buffer}%{F${color8}}·%{F-}%{O10}"
                 desktop=$((desktop+1))
                 ;;
             [Uu]*) # urgent
-                buffer="${buffer}%{F${red}}${desktop}%{F-} "
+                buffer="${buffer}%{F${red}}${desktop}%{F-}%{O10}"
                 desktop=$((desktop+1))
                 ;;
             [Mm]*) # monitor
@@ -38,7 +38,7 @@ parse_wm_report() {
                 ;;
         esac
     done
-    buffer="${buffer}%{Sf}"
+    buffer="${buffer}%{Sf}%{T-}"
 
     echo "${buffer}"
 }
@@ -202,9 +202,6 @@ while read -r input; do
     for (( i=0; i <$monitor_count; i++ )); do
         buffer="${buffer}%{S$i}%{c}${center}%{r}${date_display}  ${wifi_display}  ${volume_display} ${battery_display}"
     done
-
-    # pad left and right of each monitor's bar
-    buffer=$(echo "${buffer}" | sed -r "s/(^|%\{S.\})\s*|\s*$/\1${padding}/g")
 
     # flush colours for the transition from notification
     # to no notification
