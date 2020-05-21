@@ -52,32 +52,37 @@
   :config (if (not rich-minority-mode)
             (rich-minority-mode 1)))
 
-(use-package base16-theme
-  :pin melpa-stable
-  :init (add-to-list 'custom-theme-load-path "~/.cache/wal/"))
+(use-package ewal)
+(use-package ewal-spacemacs-themes
+  :config (load-theme 'ewal-spacemacs-modern t)
+  (enable-theme 'ewal-spacemacs-modern))
 
-(defun refresh-theme ()
-  (load-theme 'base16-wal t)
-  (set-face-attribute 'fringe nil
-                      :background nil)
-  (set-face-attribute 'ivy-current-match nil
-                      :background (plist-get base16-wal-colors :base02)
-                      :foreground (face-attribute 'default :background))
-  (set-face-attribute 'company-tooltip nil
-                      :foreground (plist-get base16-wal-colors :base02)
-                      :background (face-attribute 'default :foreground))
-  (set-face-attribute 'company-tooltip-common nil
-                      :foreground (face-attribute 'default :background))
-  (set-face-attribute 'mode-line nil
-                      :background nil)
-  (set-face-attribute 'line-number nil
-                      :foreground (plist-get base16-wal-colors :base02)
-                      :background (face-attribute 'default :background))
-  (set-face-attribute 'line-number-current-line nil
-                      :foreground (plist-get base16-wal-colors :base03)
-                      :background (face-attribute 'default :background))
-  (set-face-attribute 'org-column nil
-                      :background (face-attribute 'default :background)))
+(set-face-attribute 'mode-line nil :background nil)
+;(set-face-attribute 'line-number nil
+;                    :foreground (plist-get base16-wal-colors :base02)
+;                    :background (face-attribute 'default :background))
+
+;; (use-package base16-theme
+;;   :pin melpa-stable
+;;   :init (add-to-list 'custom-theme-load-path "~/.cache/wal/"))
+
+;; (defun refresh-theme ()
+;;   (load-theme 'base16-wal t)
+;;   (set-face-attribute 'fringe nil
+;;                       :background nil)
+;;   (set-face-attribute 'ivy-current-match nil
+;;                       :background (plist-get base16-wal-colors :base02)
+;;                       :foreground (face-attribute 'default :background))
+;;   (set-face-attribute 'company-tooltip nil
+;;                       :foreground (plist-get base16-wal-colors :base02)
+;;                       :background (face-attribute 'default :foreground))
+;;   (set-face-attribute 'company-tooltip-common nil
+;;                       :foreground (face-attribute 'default :background))
+;;   (set-face-attribute 'line-number-current-line nil
+;;                       :foreground (plist-get base16-wal-colors :base03)
+;;                       :background (face-attribute 'default :background))
+;;   (set-face-attribute 'org-column nil
+;;                       :background (face-attribute 'default :background)))
 
 ;;; tools
 
@@ -235,19 +240,9 @@
 (setq vc-follow-symlinks t)
 (setq mode-line-in-non-selected-windows nil)
 (setq minibuffer-message-timeout 0)
-(refresh-theme)
 (setq-default indent-tabs-mode nil)
 (setq x-select-enable-clipboard t)
 (setq help-window-select t)
-
-;; set up new-frame hooks, see
-;; https://www.emacswiki.org/emacs/SettingFrameColorsForEmacsClient
-(require 'server)
-(defadvice server-create-window-system-frame
-    (after set-window-system-frame-colors ())
-  (refresh-theme))
-(ad-activate 'server-create-window-system-frame)
-(add-hook 'after-make-frame-functions (lambda (&rest frame) (refresh-theme)))
 
 ;; don't close window on buffer delete
 (defun suppress-window-delete (orig-fun &rest args)

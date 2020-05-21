@@ -20,10 +20,6 @@ super + {_, shift + } @space
 super + Escape
         pkill -USR1 -x sxhkd
 
-# refresh colour scheme
-super + shift + Escape
-        ${HOME}/.local/bin/new-wal
-
 #
 # bspwm hotkeys
 #

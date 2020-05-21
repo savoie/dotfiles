@@ -16,7 +16,3 @@ bspc config paddingless_monocle  false
 
 bspc rule -a Emacs locked=on state=tiled
 bspc rule -a URxvt:scratchpad sticky=on state=floating hidden=on locked=on
-bspc rule -a Zathura state=tiled
-
-wal -i ${HOME}/.local/share/img/ -o ${HOME}/.local/bin/wal-set
-${HOME}/.local/bin/lemonbar-run &

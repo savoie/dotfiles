@@ -39,10 +39,15 @@ setxkbmap -option compose:ralt
 set SXHKD_SHELL="/bin/sh"
 sxhkd &
 
-picom --config ${HOME}/.config/compton/compton.conf --xrender-sync --xrender-sync-fence --use-ewmh-active-win -b
+feh --bg-fill ${HOME}/.local/share/img/dreary-neon.jpg &
+wal -f ${HOME}/.config/wal/colorschemes/base16-custom.json &
+lemonbar-run &
+
+picom --config ${HOME}/.config/picom/picom.conf --xrender-sync-fence --use-ewmh-active-win -b
 .local/bin/notifications &
+\emacs --daemon &
 /usr/bin/dropbox &
 
-\emacs --daemon &
+pulseaudio --start
 
 exec bspwm
