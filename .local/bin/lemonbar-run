@@ -56,9 +56,6 @@ notifications () {
     done
 }
 
-# subscribe to event stream for window manager
-bspc subscribe report > "$PANEL_FIFO" &
-
 # subscribe to music event stream
 music > "$PANEL_FIFO" &
 watch_diff "playerctl -l" "M" > "$PANEL_FIFO" &
