@@ -11,5 +11,5 @@ source ${HOME}/.local/bin/virtualenvwrapper.sh
 export SMLROOT=${HOME}/sml
 
 if [ -z "$DISPLAY" ] && [ -n "$XDG_VTNR" ] && [ "$XDG_VTNR" -eq 1 ]; then
-    exec startx &> ~/.Xoutput
+    exec startx
 fi

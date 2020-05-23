@@ -53,7 +53,6 @@ SPACESHIP_RPROMPT_ORDER=(
   pyenv         # Pyenv section
   dotnet        # .NET section
   ember         # Ember.js section
-  kubecontext   # Kubectl context section
   terraform     # Terraform workspace section
   exec_time     # Execution time
   battery       # Battery level and status
@@ -97,6 +96,12 @@ bindkey '^w' backward-kill-word
 bindkey '^r' history-incremental-search-backward
 bindkey '^a' beginning-of-line
 bindkey '^e' end-of-line
+
+catch_signal_usr1() {
+  trap catch_signal_usr1 USR1
+  rehash
+}
+trap catch_signal_usr1 USR1
 
 # Integrate system clipboard with vi-mode commands
 # From https://github.com/robbyrussell/oh-my-zsh/pull/3616/commits/0f6e49b455e498bd051d1d18d62dec4e6872d3e8

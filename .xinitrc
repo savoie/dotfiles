@@ -1,5 +1,16 @@
 #!/bin/sh
 
+# xinit is hardcoded to use sh, so this hack is the only way to run .xinitrc
+# with bash. Relevant thread:
+# https://www.reddit.com/r/linuxquestions/comments/d0ktbm/zsh_process_substitution_not_working_in_xinitrc/
+if [ x"$BASH" != x"/bin/bash" ]; then
+    exec /bin/bash ${HOME}/.xinitrc
+fi
+
+# Add absolute and relative timestamps to output and redirect to ~/.Xoutput.
+exec > >(ts -s "(+%.s)]" | ts "[%Y-%m-%d %H:%M:%S" > ${HOME}/.Xoutput) 2>&1
+set -x
+
 userresources=$HOME/.Xresources
 usermodmap=$HOME/.Xmodmap
 sysresources=/etc/X11/xinit/.Xresources
@@ -41,13 +52,12 @@ sxhkd &
 
 feh --bg-fill ${HOME}/.local/share/img/dreary-neon.jpg &
 wal -f ${HOME}/.config/wal/colorschemes/base16-custom.json &
-lemonbar-run &
 
 picom --config ${HOME}/.config/picom/picom.conf --xrender-sync-fence --use-ewmh-active-win -b
+lemonbar-run &
 .local/bin/notifications &
+
 \emacs --daemon &
 /usr/bin/dropbox &
-
-pulseaudio --start
 
 exec bspwm
