@@ -1,0 +1,5 @@
+# aliases
+alias git-dotfiles='git --git-dir=${HOME}/.gitdots/ --work-tree=${HOME}'
+alias emacs='emacsclient -c --alternate-editor=""'
+alias urxvt='urxvt -e /bin/zsh'
+alias vi='vim'
