@@ -1,0 +1,14 @@
+dropbox
+informant
+lemonbar-xft-git
+mpris-ctl
+needrestart
+nerd-fonts-fantasque-sans-mono
+python-pytube
+rxvt-unicode-cvs-patched-wideglyphs
+spaceship-prompt-git
+spotify
+spotify-tui
+spotifyd-full
+trizen-git
+unclutter-xfixes-git
