@@ -59,5 +59,6 @@ lemonbar-run &
 
 \emacs --daemon &
 /usr/bin/dropbox &
+udiskie &
 
 exec bspwm
